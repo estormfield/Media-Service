@@ -24,6 +24,7 @@ pnpm validate:config   # optional: validate your system config JSON
 - Runs Playwright in headed mode at 2560x1440 viewport
 - Uses a renderer-only Vite config and stubs `window.api`
 - On Linux, wrap commands with `xvfb-run -a` to provide a virtual display
+- Video recordings for each run are saved in `test-results/` (ignored by git) and uploaded as artifacts in GitHub Actions
 
 ## Configuration
 The launcher reads a system-wide JSON config at startup only. Default lookup order:

@@ -25,8 +25,10 @@
     "tests/unit",
     "tests/e2e",
     "vite.config.ts",
+    "vite.config.web.ts",
     "vite.config.renderer.ts",
     "vite.config.preload.ts",
+    "vitest.config.ts",
     "env.d.ts"
   ]
 }

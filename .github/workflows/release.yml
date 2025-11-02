@@ -49,6 +49,14 @@ jobs:
           CI: '1'
         run: pnpm test
 
+      - name: Upload Playwright videos
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-videos-${{ matrix.os }}
+          path: test-results
+          if-no-files-found: warn
+
       - name: Package and publish
         run: pnpm package:publish
 
