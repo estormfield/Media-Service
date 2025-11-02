@@ -31,13 +31,19 @@ function parseArgs(argv: string[]): ParsedArgs {
   const passthrough: string[] = [];
   const ownArgs: string[] = [];
 
-  const separatorIndex = argv.indexOf('--');
+  const sanitized = [...argv];
+
+  while (sanitized[0] === '--') {
+    sanitized.shift();
+  }
+
+  const separatorIndex = sanitized.indexOf('--');
 
   if (separatorIndex >= 0) {
-    ownArgs.push(...argv.slice(0, separatorIndex));
-    passthrough.push(...argv.slice(separatorIndex + 1));
+    ownArgs.push(...sanitized.slice(0, separatorIndex));
+    passthrough.push(...sanitized.slice(separatorIndex + 1));
   } else {
-    ownArgs.push(...argv);
+    ownArgs.push(...sanitized);
   }
 
   for (let i = 0; i < ownArgs.length; i += 1) {
