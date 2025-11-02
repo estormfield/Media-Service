@@ -1,3 +1,10 @@
+# Quick Release Downloads
+
+- Every merge to `main` triggers `.github/workflows/release.yml`, which builds macOS (`dmg` + `zip`) and Windows (`nsis` + `msi`) installers and attaches them to the latest GitHub release.
+- In the repository settings, set **Actions ? General ? Workflow permissions** to ?Read and write? so the default `GITHUB_TOKEN` can publish release assets; no extra secrets are required unless you override the owner/repo via `GITHUB_OWNER`/`GITHUB_REPO`.
+- After the workflow finishes, open the Releases tab and download the artifact you need (for example `tenfoot-launcher-<version>-mac-x64.dmg` or `?-win-x64.exe`).
+- If you fork this project, update `settings.githubOwner` and `settings.githubRepo` in your config or set `GITHUB_OWNER`/`GITHUB_REPO` so electron-builder publishes to the correct GitHub repository.
+
 # TenFoot Launcher
 
 Cross-platform Electron 10-foot launcher with a React/Vite front-end, GitHub-based auto updates, and kiosk-ready controls for DPAD/IR remotes.
