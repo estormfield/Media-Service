@@ -16,7 +16,7 @@ export default function LauncherGrid({
   tiles,
   isActive,
   onLaunch,
-  onBack
+  onBack,
 }: LauncherGridProps) {
   const navigation = useDpadNavigation({
     itemCount: tiles.length,
@@ -28,7 +28,7 @@ export default function LauncherGrid({
         onLaunch(tile.id);
       }
     },
-    onBack
+    onBack,
   });
 
   return (
@@ -44,7 +44,9 @@ export default function LauncherGrid({
           />
         ))}
       </div>
-      <div className="launcher-grid__hint">DPAD to navigate ? Enter to launch ? Back/Home to switch profiles</div>
+      <div className="launcher-grid__hint">
+        DPAD to navigate ? Enter to launch ? Back/Home to switch profiles
+      </div>
     </section>
   );
 }

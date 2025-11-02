@@ -6,7 +6,7 @@ export const IPC_CHANNELS = {
   PROFILE_SELECTED: 'profile:selected',
   OPEN_PROFILE_PICKER: 'ui:openProfilePicker',
   AUTO_START_STATUS: 'system:autoStartStatus',
-  AUTO_START_ENABLE: 'system:autoStartEnable'
+  AUTO_START_ENABLE: 'system:autoStartEnable',
 } as const;
 
 export type IpcChannel = (typeof IPC_CHANNELS)[keyof typeof IPC_CHANNELS];

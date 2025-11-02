@@ -18,7 +18,7 @@ export default function ProfilePicker({ profiles, isActive, onSelect }: ProfileP
       if (profile) {
         onSelect(profile.id);
       }
-    }
+    },
   });
 
   return (

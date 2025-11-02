@@ -9,13 +9,13 @@ export default defineConfig({
     headless: false,
     viewport: { width: 2560, height: 1440 },
     baseURL: 'http://127.0.0.1:5173',
-    video: 'on'
+    video: 'on',
   },
   webServer: {
     command: 'pnpm vite --config vite.config.web.ts --host 0.0.0.0 --port 5173 --strictPort',
     port: 5173,
     reuseExistingServer: !process.env.CI,
     stdout: 'pipe',
-    stderr: 'pipe'
-  }
+    stderr: 'pipe',
+  },
 });

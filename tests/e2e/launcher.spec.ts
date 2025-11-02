@@ -10,7 +10,7 @@ test.describe('TenFoot Launcher UI', () => {
       window.api = {
         getBootstrap: () => Promise.resolve({ config, autoStartEnabled: true }),
         launchEntry: () => Promise.resolve(),
-        setAutoStart: () => Promise.resolve(true)
+        setAutoStart: () => Promise.resolve(true),
       } as typeof window.api;
     }, sampleConfig);
   });

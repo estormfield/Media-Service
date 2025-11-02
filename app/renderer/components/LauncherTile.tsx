@@ -28,9 +28,7 @@ export default function LauncherTile({ entry, focused, onActivate, onFocus }: La
       )}
       <div className="launcher-tile__meta">
         <span className="launcher-tile__title">{entry.title}</span>
-        {entry.subtitle ? (
-          <span className="launcher-tile__subtitle">{entry.subtitle}</span>
-        ) : null}
+        {entry.subtitle ? <span className="launcher-tile__subtitle">{entry.subtitle}</span> : null}
         <span className="launcher-tile__badge">{entry.kind.toUpperCase()}</span>
       </div>
     </button>

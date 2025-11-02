@@ -9,7 +9,7 @@ export const CONFIG_PATHS: Record<NodeJS.Platform, string> = {
   sunos: '/etc/tenfoot-launcher/config.json',
   haiku: '/etc/tenfoot-launcher/config.json',
   cygwin: '/etc/tenfoot-launcher/config.json',
-  netbsd: '/etc/tenfoot-launcher/config.json'
+  netbsd: '/etc/tenfoot-launcher/config.json',
 };
 
 export const FALLBACK_CONFIG_PATH = './config/config.sample.json';

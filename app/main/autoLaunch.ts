@@ -21,7 +21,7 @@ async function ensureWindowsShortcut(): Promise<void> {
       {
         target: process.execPath,
         workingDir: path.dirname(process.execPath),
-        runStyle: 1
+        runStyle: 1,
       },
       (error) => {
         if (error) {
@@ -29,7 +29,7 @@ async function ensureWindowsShortcut(): Promise<void> {
           return;
         }
         resolve();
-      }
+      },
     );
   });
   logger.info('Ensured Windows startup shortcut at %s', shortcutPath);

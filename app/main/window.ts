@@ -22,8 +22,8 @@ export async function createMainWindow(): Promise<BrowserWindow> {
       nodeIntegration: false,
       sandbox: true,
       devTools: !app.isPackaged,
-      disableHtmlFullscreenWindowResize: false
-    }
+      disableHtmlFullscreenWindowResize: false,
+    },
   });
 
   const url = process.env.VITE_DEV_SERVER_URL;

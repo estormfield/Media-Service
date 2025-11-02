@@ -23,7 +23,7 @@ function spawnDetached(command: string, args: string[], workingDirectory?: strin
     cwd: workingDirectory,
     windowsHide: false,
     detached: true,
-    stdio: 'ignore'
+    stdio: 'ignore',
   });
   child.unref();
 }
@@ -37,10 +37,7 @@ function launchExecutable(entry: Extract<LauncherEntry, { kind: 'emby' | 'game' 
   spawnDetached(entry.executable, entry.args, entry.workingDirectory);
 }
 
-export function launchConfiguredEntry(
-  config: AppConfig,
-  payload: LaunchEntryPayload
-): void {
+export function launchConfiguredEntry(config: AppConfig, payload: LaunchEntryPayload): void {
   const entry = resolveEntry(config, payload);
   if (!entry) {
     return;

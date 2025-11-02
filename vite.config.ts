@@ -18,14 +18,21 @@ export default defineConfig(({ mode }) => ({
             emptyOutDir: false,
             sourcemap: mode !== 'production',
             rollupOptions: {
-              external: ['electron', 'electron-updater', 'fs-extra', 'path', 'url', 'child_process']
-            }
-          }
-        }
+              external: [
+                'electron',
+                'electron-updater',
+                'fs-extra',
+                'path',
+                'url',
+                'child_process',
+              ],
+            },
+          },
+        },
       },
       preload: {
         input: {
-          index: 'app/preload/index.ts'
+          index: 'app/preload/index.ts',
         },
         vite: {
           build: {
@@ -33,30 +40,30 @@ export default defineConfig(({ mode }) => ({
             emptyOutDir: false,
             sourcemap: mode !== 'production',
             rollupOptions: {
-              external: ['electron']
-            }
-          }
-        }
-      }
+              external: ['electron'],
+            },
+          },
+        },
+      },
     }),
-    renderer()
+    renderer(),
   ],
   resolve: {
     alias: {
       '@renderer': `${__dirname}/app/renderer`,
       '@shared': `${__dirname}/app/shared`,
-      '@main': `${__dirname}/app/main`
-    }
+      '@main': `${__dirname}/app/main`,
+    },
   },
   build: {
     outDir: 'dist/renderer',
     emptyOutDir: false,
-    sourcemap: mode !== 'production'
+    sourcemap: mode !== 'production',
   },
   server: {
-    port: 5173
+    port: 5173,
   },
   preview: {
-    port: 4173
-  }
+    port: 4173,
+  },
 }));

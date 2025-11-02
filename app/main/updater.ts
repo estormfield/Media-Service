@@ -18,7 +18,7 @@ export function initializeAutoUpdater(settings: LauncherSettings): void {
     provider: 'github',
     owner: settings.githubOwner,
     repo: settings.githubRepo,
-    releaseType: settings.updateChannel === 'beta' ? 'prerelease' : 'release'
+    releaseType: settings.updateChannel === 'beta' ? 'prerelease' : 'release',
   });
 
   autoUpdater.on('update-available', () => {
@@ -38,7 +38,7 @@ export function initializeAutoUpdater(settings: LauncherSettings): void {
       type: 'info',
       buttons: ['Install and Restart', 'Later'],
       title: 'Update Ready',
-      message: 'A new version has been downloaded. Install on next restart?'
+      message: 'A new version has been downloaded. Install on next restart?',
     });
     if (response.response === 0) {
       autoUpdater.quitAndInstall(true, true);

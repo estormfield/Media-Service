@@ -56,20 +56,17 @@ export default function App() {
       }
       await window.api.launchEntry({ profileId: selectedProfileId, entryId });
     },
-    [selectedProfileId]
+    [selectedProfileId],
   );
 
   const handleBackToProfiles = useCallback(() => {
     setView('profiles');
   }, []);
 
-  const handleAutoStartChange = useCallback(
-    async (nextEnabled: boolean) => {
-      const confirmed = await window.api.setAutoStart(nextEnabled);
-      setAutoStartEnabled(confirmed);
-    },
-    []
-  );
+  const handleAutoStartChange = useCallback(async (nextEnabled: boolean) => {
+    const confirmed = await window.api.setAutoStart(nextEnabled);
+    setAutoStartEnabled(confirmed);
+  }, []);
 
   if (error) {
     return (
@@ -86,13 +83,7 @@ export default function App() {
   }
 
   if (view === 'profiles') {
-    return (
-      <ProfilePicker
-        profiles={config.profiles}
-        isActive
-        onSelect={handleProfileSelect}
-      />
-    );
+    return <ProfilePicker profiles={config.profiles} isActive onSelect={handleProfileSelect} />;
   }
 
   if (!selectedProfile) {

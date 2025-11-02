@@ -9,7 +9,7 @@ export const launcherEntrySchema = z.discriminatedUnion('kind', [
     browserArgs: z.array(z.string()).default(() => ['--app=%URL%']),
     title: z.string().min(1),
     subtitle: z.string().optional(),
-    artwork: z.string().optional()
+    artwork: z.string().optional(),
   }),
   z.object({
     kind: z.literal('emby'),
@@ -19,7 +19,7 @@ export const launcherEntrySchema = z.discriminatedUnion('kind', [
     workingDirectory: z.string().optional(),
     title: z.string().min(1),
     subtitle: z.string().optional(),
-    artwork: z.string().optional()
+    artwork: z.string().optional(),
   }),
   z.object({
     kind: z.literal('game'),
@@ -29,14 +29,14 @@ export const launcherEntrySchema = z.discriminatedUnion('kind', [
     workingDirectory: z.string().optional(),
     title: z.string().min(1),
     subtitle: z.string().optional(),
-    artwork: z.string().optional()
-  })
+    artwork: z.string().optional(),
+  }),
 ]);
 
 export const profileSchema = z.object({
   id: z.string().min(1),
   displayName: z.string().min(1),
-  tiles: z.array(launcherEntrySchema).min(1)
+  tiles: z.array(launcherEntrySchema).min(1),
 });
 
 export const settingsSchema = z.object({
@@ -47,15 +47,15 @@ export const settingsSchema = z.object({
   window: z
     .object({
       width: z.number().int().positive().default(2560),
-      height: z.number().int().positive().default(1440)
+      height: z.number().int().positive().default(1440),
     })
-    .default({ width: 2560, height: 1440 })
+    .default({ width: 2560, height: 1440 }),
 });
 
 export const appConfigSchema = z.object({
   version: z.string().default('1'),
   profiles: z.array(profileSchema).min(1),
-  settings: settingsSchema
+  settings: settingsSchema,
 });
 
 export type LauncherEntry = z.infer<typeof launcherEntrySchema>;

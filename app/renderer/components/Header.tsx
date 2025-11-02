@@ -12,7 +12,7 @@ export default function Header({
   profileName,
   autoStartEnabled,
   onAutoStartChange,
-  onBack
+  onBack,
 }: HeaderProps) {
   return (
     <header className="launcher-header">
