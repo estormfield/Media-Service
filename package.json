@@ -22,7 +22,9 @@
     "test:e2e": "playwright test --config=tests/e2e/playwright.config.ts",
     "validate:config": "tsx scripts/validate-config.ts",
     "package": "run-s build electron:package",
-    "package:publish": "run-s build electron:publish",
+    "ci:publish": "tsx scripts/publish.ts",
+    "package:publish": "pnpm ci:publish -- --ci",
+    "package:publish:dry-run": "pnpm ci:publish -- --dry-run",
     "electron:package": "electron-builder --config electron-builder.config.js",
     "electron:publish": "electron-builder --config electron-builder.config.js --publish always",
     "electron": "electron .",
@@ -36,7 +38,6 @@
     "pnpm": ">=8"
   },
   "dependencies": {
-    "electron": "^30.0.0",
     "electron-log": "^5.1.2",
     "electron-updater": "^6.1.8",
     "fs-extra": "^11.2.0",
@@ -60,6 +61,7 @@
     "@vitejs/plugin-react": "^4.3.0",
     "concurrently": "^8.2.2",
     "cross-env": "^7.0.3",
+    "electron": "^30.0.0",
     "electron-builder": "^24.13.3",
     "eslint": "^8.57.0",
     "eslint-config-prettier": "^9.1.0",

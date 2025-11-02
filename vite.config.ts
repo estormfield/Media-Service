@@ -6,6 +6,12 @@ import renderer from 'vite-plugin-electron-renderer';
 
 const __dirname = fileURLToPath(new URL('.', import.meta.url));
 
+const aliases = {
+  '@renderer': `${__dirname}/app/renderer`,
+  '@shared': `${__dirname}/app/shared`,
+  '@main': `${__dirname}/app/main`,
+};
+
 export default defineConfig(({ mode }) => ({
   plugins: [
     react(),
@@ -13,6 +19,9 @@ export default defineConfig(({ mode }) => ({
       main: {
         entry: 'app/main/main.ts',
         vite: {
+          resolve: {
+            alias: aliases,
+          },
           build: {
             outDir: 'dist/main',
             emptyOutDir: false,
@@ -26,6 +35,9 @@ export default defineConfig(({ mode }) => ({
                 'url',
                 'child_process',
               ],
+              output: {
+                entryFileNames: 'index.js',
+              },
             },
           },
         },
@@ -35,6 +47,9 @@ export default defineConfig(({ mode }) => ({
           index: 'app/preload/index.ts',
         },
         vite: {
+          resolve: {
+            alias: aliases,
+          },
           build: {
             outDir: 'dist/preload',
             emptyOutDir: false,
@@ -49,11 +64,7 @@ export default defineConfig(({ mode }) => ({
     renderer(),
   ],
   resolve: {
-    alias: {
-      '@renderer': `${__dirname}/app/renderer`,
-      '@shared': `${__dirname}/app/shared`,
-      '@main': `${__dirname}/app/main`,
-    },
+    alias: aliases,
   },
   build: {
     outDir: 'dist/renderer',
