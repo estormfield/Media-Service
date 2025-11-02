@@ -1,0 +1,150 @@
+:root {
+  font-family: 'Segoe UI', sans-serif;
+  color: #fff;
+  background-color: #101010;
+}
+
+body {
+  margin: 0;
+  background: #101010;
+}
+
+.app {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.app__error {
+  position: absolute;
+  top: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(255, 0, 0, 0.8);
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 1.5rem;
+  z-index: 10;
+}
+
+.profile-picker {
+  text-align: center;
+  color: #fff;
+}
+
+.profile-picker__title {
+  font-size: 3rem;
+  margin-bottom: 2rem;
+}
+
+.profile-picker__grid {
+  display: flex;
+  gap: 1.5rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.profile-picker__option {
+  background: #1f1f1f;
+  color: #fff;
+  border: 4px solid transparent;
+  border-radius: 16px;
+  padding: 1.5rem 2rem;
+  font-size: 2rem;
+}
+
+.profile-picker__option:focus-visible {
+  outline: none;
+  border-color: #4cc2ff;
+}
+
+.profile-picker__pin {
+  margin-top: 2rem;
+  display: inline-flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.profile-picker__pin input {
+  font-size: 2rem;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  border: none;
+}
+
+.profile-picker__actions {
+  display: flex;
+  gap: 1rem;
+}
+
+.tile-grid {
+  display: grid;
+  width: 80vw;
+  gap: 24px;
+}
+
+.tile {
+  background: #1a1a1a;
+  border-radius: 24px;
+  border: 6px solid transparent;
+  color: #fff;
+  font-size: 1.5rem;
+  padding: 2rem 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.tile--focused {
+  transform: scale(1.05);
+  border-color: #4cc2ff;
+}
+
+.tile__icon {
+  width: 128px;
+  height: 128px;
+  object-fit: contain;
+  margin-bottom: 1rem;
+}
+
+.tile__label {
+  font-size: 2rem;
+}
+
+.tile-grid__overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3rem;
+}
+
+.focus-ring {
+  border: 6px solid transparent;
+  border-radius: 24px;
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.focus-ring--visible {
+  opacity: 1;
+  border-color: #4cc2ff;
+}
+
+button {
+  cursor: pointer;
+}

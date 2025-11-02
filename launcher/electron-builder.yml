@@ -1,0 +1,15 @@
+appId: com.tvlauncher.app
+productName: TVLauncher
+files:
+  - dist/main/**
+  - dist/renderer/**
+  - package.json
+mac:
+  target:
+    - dmg
+    - zip
+win:
+  target:
+    - nsis
+publish:
+  provider: github
