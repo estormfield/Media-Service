@@ -1,8 +1,8 @@
-const repoSlug = process.env.GITHUB_REPOSITORY ?? 'example/tenfoot-launcher';
+const repoSlug = process.env.GITHUB_REPOSITORY ?? 'estormfield/Media-Service';
 const [defaultOwner, defaultRepo] = repoSlug.split('/') ?? [];
 
-const publishOwner = process.env.GITHUB_OWNER ?? defaultOwner ?? 'example';
-const publishRepo = process.env.GITHUB_REPO ?? defaultRepo ?? 'tenfoot-launcher';
+const publishOwner = process.env.GITHUB_OWNER ?? defaultOwner ?? 'estormfield';
+const publishRepo = process.env.GITHUB_REPO ?? defaultRepo ?? 'Media-Service';
 const publishReleaseType = process.env.UPDATE_CHANNEL === 'beta' ? 'prerelease' : 'release';
 
 /** @type {import('electron-builder').Configuration} */

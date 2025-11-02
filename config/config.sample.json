@@ -2,8 +2,8 @@
   "version": "1",
   "settings": {
     "autoStart": true,
-    "githubOwner": "example",
-    "githubRepo": "tenfoot-launcher",
+    "githubOwner": "estormfield",
+    "githubRepo": "Media-Service",
     "updateChannel": "stable",
     "window": {
       "width": 2560,
