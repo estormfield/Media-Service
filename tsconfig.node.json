@@ -1,0 +1,25 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "NodeNext",
+    "moduleResolution": "nodenext",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "allowSyntheticDefaultImports": true,
+    "types": ["node"],
+    "baseUrl": "./",
+    "paths": {
+      "@shared/*": ["app/shared/*"],
+      "@main/*": ["app/main/*"]
+    },
+    "outDir": "dist/node"
+  },
+  "include": [
+    "app/main",
+    "app/preload",
+    "app/shared",
+    "scripts"
+  ]
+}

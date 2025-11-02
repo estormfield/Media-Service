@@ -1,0 +1,20 @@
+.launcher-grid {
+  display: flex;
+  flex-direction: column;
+  padding: 2rem 4rem;
+  color: #ffffff;
+}
+
+.launcher-grid__tiles {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 2rem;
+  justify-items: center;
+}
+
+.launcher-grid__hint {
+  margin-top: 2rem;
+  font-size: 1rem;
+  opacity: 0.75;
+  text-align: center;
+}
