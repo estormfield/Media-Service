@@ -1,0 +1,51 @@
+.profile-picker__backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+}
+
+.profile-picker {
+  background: #151728;
+  padding: 2.5rem 3rem;
+  border-radius: 32px;
+  width: 720px;
+  max-width: calc(100% - 4rem);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.7);
+}
+
+.profile-picker h2 {
+  margin: 0 0 2rem;
+  font-size: 2.5rem;
+}
+
+.profile-picker__list {
+  display: grid;
+  gap: 1rem;
+}
+
+.profile-picker__button {
+  font-size: 1.6rem;
+  padding: 1.2rem 1.6rem;
+  border-radius: 18px;
+  background: #1f2236;
+  border: 3px solid transparent;
+  text-align: left;
+  cursor: pointer;
+  transition: border 0.2s ease, transform 0.2s ease;
+}
+
+.profile-picker__button--active,
+.profile-picker__button:hover {
+  border-color: #3b82f6;
+  transform: translateY(-2px);
+}
+
+.profile-picker__description {
+  margin-top: 0.5rem;
+  font-size: 1rem;
+  opacity: 0.75;
+}
