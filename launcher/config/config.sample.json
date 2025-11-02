@@ -1,0 +1,43 @@
+{
+  "version": "1.0.0",
+  "ui": { "rows": 2, "cols": 5, "tileMinPx": 160, "resolutionHint": "1440p" },
+  "paths": { "youtubeBrowser": "auto" },
+  "profiles": [
+    {
+      "id": "adult",
+      "name": "Adult",
+      "pin": "1234",
+      "tiles": [
+        { "id": "yt", "label": "YouTube", "kind": "youtube" },
+        {
+          "id": "emby",
+          "label": "Emby Theater",
+          "kind": "emby",
+          "winPath": "C:\\\Program Files\\\Emby Theater\\\Emby.Theater.exe",
+          "macPath": "/Applications/Emby Theater.app"
+        },
+        {
+          "id": "game1",
+          "label": "Indie Game",
+          "kind": "exec",
+          "winPath": "D:\\Games\\IndieGame\\game.exe",
+          "macPath": "/Applications/IndieGame.app"
+        }
+      ]
+    },
+    {
+      "id": "kids",
+      "name": "Kids",
+      "tiles": [
+        { "id": "yt", "label": "YouTube", "kind": "youtube" },
+        {
+          "id": "emby",
+          "label": "Emby",
+          "kind": "emby",
+          "winPath": "C:\\\Program Files\\\Emby Theater\\\Emby.Theater.exe",
+          "macPath": "/Applications/Emby Theater.app"
+        }
+      ]
+    }
+  ]
+}

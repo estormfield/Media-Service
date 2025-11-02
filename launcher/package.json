@@ -1,0 +1,50 @@
+{
+  "name": "tv-launcher",
+  "version": "1.0.0",
+  "description": "Cross-platform 10-foot TV launcher built with Electron and React",
+  "main": "dist/main/index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "vite-electron dev",
+    "build": "vite-electron build",
+    "lint": "eslint . --ext .ts,.tsx",
+    "format": "prettier -w .",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run",
+    "test:ui": "playwright test",
+    "release": "electron-builder --publish always",
+    "prepare": "husky install"
+  },
+  "dependencies": {
+    "@electron/remote": "^2.1.2",
+    "@tanstack/react-query": "^5.35.6",
+    "electron-updater": "^6.1.9",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "zustand": "^4.5.5",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@electron/notarize": "^2.2.0",
+    "@playwright/test": "^1.43.1",
+    "@testing-library/jest-dom": "^6.4.1",
+    "@testing-library/react": "^14.3.1",
+    "@types/node": "^20.12.7",
+    "@types/react": "^18.2.61",
+    "@types/react-dom": "^18.2.21",
+    "@typescript-eslint/eslint-plugin": "^7.5.0",
+    "@typescript-eslint/parser": "^7.5.0",
+    "electron": "^32.0.0",
+    "electron-builder": "^24.9.1",
+    "eslint": "^8.57.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-react": "^7.34.0",
+    "husky": "^9.0.11",
+    "lint-staged": "^15.2.5",
+    "prettier": "^3.2.5",
+    "typescript": "^5.4.4",
+    "vite": "^5.2.7",
+    "vite-electron-plugin": "^0.9.4",
+    "vitest": "^1.4.0"
+  }
+}
