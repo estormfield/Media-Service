@@ -16,10 +16,5 @@
     },
     "outDir": "dist/node"
   },
-  "include": [
-    "app/main",
-    "app/preload",
-    "app/shared",
-    "scripts"
-  ]
+  "include": ["app/main", "app/preload", "app/shared", "scripts"]
 }

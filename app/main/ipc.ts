@@ -2,11 +2,7 @@ import { ipcMain } from 'electron';
 import { IPC_CHANNELS, type LaunchEntryPayload } from '@shared/ipc.js';
 import { loadConfig } from './config.js';
 import { launchConfiguredEntry } from './launcher.js';
-import {
-  ensureAutoLaunchEnabled,
-  isAutoLaunchEnabled,
-  disableAutoLaunch
-} from './autoLaunch.js';
+import { ensureAutoLaunchEnabled, isAutoLaunchEnabled, disableAutoLaunch } from './autoLaunch.js';
 import { logger } from './logger.js';
 
 export function registerIpcHandlers(): void {

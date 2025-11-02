@@ -5,7 +5,7 @@ import { useDpadNavigation } from '../../app/renderer/hooks/useDpadNavigation.js
 describe('useDpadNavigation', () => {
   it('moves focus within bounds using arrow keys', () => {
     const { result, unmount } = renderHook(() =>
-      useDpadNavigation({ itemCount: 5, columns: 3, isActive: true })
+      useDpadNavigation({ itemCount: 5, columns: 3, isActive: true }),
     );
 
     act(() => {
@@ -29,7 +29,7 @@ describe('useDpadNavigation', () => {
   it('invokes select callback on Enter', () => {
     const onSelect = vi.fn();
     const { unmount } = renderHook(() =>
-      useDpadNavigation({ itemCount: 3, columns: 3, isActive: true, onSelect })
+      useDpadNavigation({ itemCount: 3, columns: 3, isActive: true, onSelect }),
     );
 
     act(() => {

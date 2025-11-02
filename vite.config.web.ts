@@ -9,13 +9,13 @@ export default defineConfig({
   resolve: {
     alias: {
       '@renderer': `${__dirname}/app/renderer`,
-      '@shared': `${__dirname}/app/shared`
-    }
+      '@shared': `${__dirname}/app/shared`,
+    },
   },
   server: {
-    port: 5173
+    port: 5173,
   },
   preview: {
-    port: 4173
-  }
+    port: 4173,
+  },
 });

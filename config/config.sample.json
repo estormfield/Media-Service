@@ -22,11 +22,7 @@
           "subtitle": "Launch dedicated browser window",
           "url": "https://www.youtube.com/tv",
           "browserPath": "C:/Program Files/Google/Chrome/Application/chrome.exe",
-          "browserArgs": [
-            "--app=%URL%",
-            "--kiosk",
-            "--no-first-run"
-          ],
+          "browserArgs": ["--app=%URL%", "--kiosk", "--no-first-run"],
           "artwork": "https://i.imgur.com/NvM0QkP.jpg"
         },
         {
@@ -61,9 +57,7 @@
           "subtitle": "Music mode",
           "url": "https://music.youtube.com",
           "browserPath": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
-          "browserArgs": [
-            "--app=%URL%"
-          ]
+          "browserArgs": ["--app=%URL%"]
         },
         {
           "kind": "game",

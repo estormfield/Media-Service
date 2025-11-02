@@ -9,7 +9,7 @@ describe('validateConfig', () => {
         autoStart: true,
         githubOwner: 'test-owner',
         githubRepo: 'test-repo',
-        updateChannel: 'stable'
+        updateChannel: 'stable',
       },
       profiles: [
         {
@@ -21,11 +21,11 @@ describe('validateConfig', () => {
               id: 'yt-main',
               title: 'YouTube',
               url: 'https://youtube.com/tv',
-              browserPath: '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
-            }
-          ]
-        }
-      ]
+              browserPath: '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
+            },
+          ],
+        },
+      ],
     });
 
     expect(config.profiles[0]?.displayName).toBe('Primary');
@@ -38,10 +38,10 @@ describe('validateConfig', () => {
         settings: {
           githubOwner: '',
           githubRepo: '',
-          updateChannel: 'stable'
+          updateChannel: 'stable',
         },
-        profiles: []
-      })
+        profiles: [],
+      }),
     ).toThrowError();
   });
 });

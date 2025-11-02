@@ -31,30 +31,24 @@ export function useDpadNavigation(options: DpadNavigationOptions): DpadNavigatio
     }
   }, [itemCount, focusedIndex]);
 
-  const moveFocus = useCallback(
-    (delta: number) => {
-      setFocusedIndex((prev) => {
-        const next = Math.min(Math.max(prev + delta, 0), Math.max(itemCountRef.current - 1, 0));
-        focusedIndexRef.current = next;
-        return next;
-      });
-    },
-    []
-  );
+  const moveFocus = useCallback((delta: number) => {
+    setFocusedIndex((prev) => {
+      const next = Math.min(Math.max(prev + delta, 0), Math.max(itemCountRef.current - 1, 0));
+      focusedIndexRef.current = next;
+      return next;
+    });
+  }, []);
 
-  const jumpFocus = useCallback(
-    (delta: number) => {
-      setFocusedIndex((prev) => {
-        const next = prev + delta;
-        if (next < 0 || next >= itemCountRef.current) {
-          return prev;
-        }
-        focusedIndexRef.current = next;
-        return next;
-      });
-    },
-    []
-  );
+  const jumpFocus = useCallback((delta: number) => {
+    setFocusedIndex((prev) => {
+      const next = prev + delta;
+      if (next < 0 || next >= itemCountRef.current) {
+        return prev;
+      }
+      focusedIndexRef.current = next;
+      return next;
+    });
+  }, []);
 
   useEffect(() => {
     if (!isActive) {
@@ -112,6 +106,6 @@ export function useDpadNavigation(options: DpadNavigationOptions): DpadNavigatio
   return {
     focusedIndex,
     isFocused,
-    requestFocus
+    requestFocus,
   };
 }

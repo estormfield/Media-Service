@@ -11,33 +11,33 @@ const config = {
   productName: 'TenFoot Launcher',
   directories: {
     output: 'release',
-    buildResources: 'resources'
+    buildResources: 'resources',
   },
   files: ['dist/main/**/*', 'dist/preload/**/*', 'dist/renderer/**/*', 'config/**', 'package.json'],
   extraMetadata: {
-    main: 'dist/main/index.js'
+    main: 'dist/main/index.js',
   },
   win: {
     target: [
       {
         target: 'nsis',
-        arch: ['x64']
+        arch: ['x64'],
       },
       {
         target: 'msi',
-        arch: ['x64']
-      }
+        arch: ['x64'],
+      },
     ],
     artifactName: 'tenfoot-launcher-${version}-${os}-${arch}.${ext}',
-    publish: ['github']
+    publish: ['github'],
   },
   nsis: {
     oneClick: false,
     perMachine: true,
-    allowToChangeInstallationDirectory: true
+    allowToChangeInstallationDirectory: true,
   },
   msi: {
-    perMachine: true
+    perMachine: true,
   },
   mac: {
     category: 'public.app-category.games',
@@ -46,19 +46,19 @@ const config = {
     hardenedRuntime: false,
     gatekeeperAssess: false,
     entitlements: null,
-    publish: ['github']
+    publish: ['github'],
   },
   dmg: {
-    sign: false
+    sign: false,
   },
   publish: [
     {
       provider: 'github',
       owner: publishOwner,
       repo: publishRepo,
-      releaseType: publishReleaseType
-    }
-  ]
+      releaseType: publishReleaseType,
+    },
+  ],
 };
 
 export default config;

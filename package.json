@@ -12,6 +12,7 @@
     "build:bundle": "vite build",
     "lint": "eslint . --ext .ts,.tsx",
     "lint:fix": "eslint . --ext .ts,.tsx --fix",
+    "format:check": "prettier --check \"**/*.{ts,tsx,js,json,md}\"",
     "format": "prettier --write \"**/*.{ts,tsx,js,json,md}\"",
     "typecheck": "run-s typecheck:renderer typecheck:node",
     "typecheck:renderer": "tsc --noEmit -p tsconfig.json",
