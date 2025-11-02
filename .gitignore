@@ -1,3 +1,9 @@
+node_modules/
+dist/
+release/
+playwright-report/
+coverage/
+*.log
 # Logs
 logs
 *.log
