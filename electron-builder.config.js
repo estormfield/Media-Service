@@ -1,3 +1,10 @@
+const repoSlug = process.env.GITHUB_REPOSITORY ?? 'example/tenfoot-launcher';
+const [defaultOwner, defaultRepo] = repoSlug.split('/') ?? [];
+
+const publishOwner = process.env.GITHUB_OWNER ?? defaultOwner ?? 'example';
+const publishRepo = process.env.GITHUB_REPO ?? defaultRepo ?? 'tenfoot-launcher';
+const publishReleaseType = process.env.UPDATE_CHANNEL === 'beta' ? 'prerelease' : 'release';
+
 /** @type {import('electron-builder').Configuration} */
 const config = {
   appId: 'com.example.tenfootlauncher',
@@ -47,9 +54,9 @@ const config = {
   publish: [
     {
       provider: 'github',
-      owner: 'example',
-      repo: 'tenfoot-launcher',
-      releaseType: 'release'
+      owner: publishOwner,
+      repo: publishRepo,
+      releaseType: publishReleaseType
     }
   ]
 };

@@ -55,6 +55,18 @@ Respectfully disabled when `settings.autoStart` is false.
 
 Electron Builder configuration lives in `electron-builder.config.js`. Auto updates rely on GitHub releases via `electron-updater`.
 
+### GitHub Release & Auto-update Setup
+1. **Personal access token** ? create a classic PAT with `repo` scope (or use a GitHub App token) and add it to the repository as the `GH_TOKEN` secret so the workflow can publish releases.
+2. **Update the config file** ? in your deployed config (copy from `config/config.sample.json`), set `settings.githubOwner` and `settings.githubRepo` to the owner/repo that will host releases. The running app uses these values to resolve update feeds.
+3. **Ensure repo metadata matches** ? the Electron Builder config reads `GITHUB_REPOSITORY` (or `GITHUB_OWNER`/`GITHUB_REPO`) when building in CI. If you publish from a fork, override these env vars or edit `electron-builder.config.js` accordingly.
+4. **Tag to publish** ? after merging to `main`, bump `package.json` version, commit, then tag and push:
+   ```bash
+   git tag v1.0.0
+   git push origin v1.0.0
+   ```
+   The `release.yml` workflow will build unsigned macOS (`.dmg` + `.zip`) and Windows (`.exe` + `.msi`) installers, upload them to the tagged GitHub Release, and publish `latest.yml`/`latest.json` for auto-update.
+5. **Ship future updates** ? repeat the bump/tag process for each release. Clients that have installed a previous build will see update prompts from `electron-updater` once the new release assets are available.
+
 ## Continuous Integration
 `/.github/workflows/release.yml` builds on tag pushes (`v*`) across macOS and Windows:
 
