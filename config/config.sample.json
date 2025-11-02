@@ -1,0 +1,54 @@
+{
+  "defaultProfileId": "family",
+  "youtubeBrowserPath": "C:/Program Files/Google/Chrome/Application/chrome.exe",
+  "embyExecutablePath": "C:/Users/Public/AppData/Local/Programs/emby-theater/Emby.Theater.exe",
+  "gameBasePath": "D:/Games",
+  "profiles": [
+    {
+      "id": "family",
+      "name": "Family Room",
+      "description": "Curated family-friendly experiences.",
+      "launchers": [
+        {
+          "type": "youtube",
+          "id": "youtube-kids",
+          "title": "YouTube Kids",
+          "url": "https://www.youtube.com/tv",
+          "browserArgs": ["--kiosk"]
+        },
+        {
+          "type": "emby",
+          "id": "emby-theater",
+          "title": "Emby Theater",
+          "executablePath": "C:/Users/Public/AppData/Local/Programs/emby-theater/Emby.Theater.exe"
+        },
+        {
+          "type": "game",
+          "id": "lego-star-wars",
+          "title": "LEGO Star Wars",
+          "executablePath": "LEGOStarWars/LEGOStarWars.exe"
+        }
+      ]
+    },
+    {
+      "id": "cinema",
+      "name": "Cinema",
+      "description": "Home theater profile for adults.",
+      "launchers": [
+        {
+          "type": "youtube",
+          "id": "youtube-premium",
+          "title": "YouTube Premium",
+          "url": "https://www.youtube.com/tv"
+        },
+        {
+          "type": "game",
+          "id": "forza",
+          "title": "Forza Horizon",
+          "executablePath": "ForzaHorizon/ForzaHorizon.exe",
+          "workingDirectory": "D:/Games/ForzaHorizon"
+        }
+      ]
+    }
+  ]
+}

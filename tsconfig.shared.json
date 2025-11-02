@@ -1,0 +1,15 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "rootDir": "app/shared",
+    "outDir": "dist/shared",
+    "composite": true,
+    "types": [
+      "node"
+    ],
+    "noEmit": false
+  },
+  "include": [
+    "app/shared/**/*"
+  ]
+}
