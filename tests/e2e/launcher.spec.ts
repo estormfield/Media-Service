@@ -11,16 +11,21 @@ test.describe('TenFoot Launcher UI', () => {
   test.beforeEach(async ({ page }) => {
     await page.addInitScript((config) => {
       const launches: Array<{ profileId: string; entryId: string }> = [];
+      const autoStartCalls: boolean[] = [];
 
       // Expose helpers on window for assertions later in the test.
       window.__playwrightLaunches__ = launches;
+      window.__playwrightAutoStartCalls__ = autoStartCalls;
       window.api = {
-        getBootstrap: () => Promise.resolve({ config, autoStartEnabled: true }),
+        getBootstrap: () => Promise.resolve({ config, autoStartEnabled: false }),
         launchEntry: (payload) => {
           launches.push(payload);
           return Promise.resolve();
         },
-        setAutoStart: () => Promise.resolve(true),
+        setAutoStart: async (nextEnabled: boolean) => {
+          autoStartCalls.push(nextEnabled);
+          return nextEnabled;
+        },
       } as typeof window.api;
     }, sampleConfig);
   });
@@ -62,5 +67,33 @@ test.describe('TenFoot Launcher UI', () => {
     // Navigate back to ensure the video captures profile screen transition as well.
     await page.keyboard.press('Backspace');
     await expect(page.getByText('Who is using TenFoot Launcher?')).toBeVisible();
+  });
+
+  test('toggles auto-start from the header controls', async ({ page }) => {
+    await page.goto('/');
+
+    await expect(page.getByText('Who is using TenFoot Launcher?')).toBeVisible();
+    await page.keyboard.press('Enter');
+
+    const toggle = page.getByRole('button', { name: /Auto-start on login/i });
+    await expect(toggle).toBeVisible();
+    await expect(toggle).toHaveText(/Auto-start on login\s*OFF/i);
+
+    await toggle.click();
+
+    await expect
+      .poll(async () => page.evaluate(() => window.__playwrightAutoStartCalls__?.length ?? 0))
+      .toBe(1);
+    await expect(toggle).toHaveText(/Auto-start on login\s*ON/i);
+
+    await toggle.click();
+
+    await expect
+      .poll(async () => page.evaluate(() => window.__playwrightAutoStartCalls__?.length ?? 0))
+      .toBe(2);
+    await expect(toggle).toHaveText(/Auto-start on login\s*OFF/i);
+
+    const autoStartCalls = await page.evaluate(() => window.__playwrightAutoStartCalls__ ?? []);
+    expect(autoStartCalls).toEqual([true, false]);
   });
 });
