@@ -66,6 +66,7 @@ Respectfully disabled when `settings.autoStart` is false.
 - `pnpm build` ? bundle renderer, main, and preload via Vite+Electron
 - `pnpm package` ? create unsigned Windows (NSIS/MSI) and macOS (DMG/ZIP) artifacts in `release/`
 - `pnpm package:publish` ? same as above plus publish update assets to GitHub Releases (`GH_TOKEN` required)
+- `pnpm package:publish:dry-run` ? run the full publish pipeline locally without uploading to GitHub (packages land in `release/`)
 
 Electron Builder configuration lives in `electron-builder.config.js`. Auto updates rely on GitHub releases via `electron-updater`.
 
@@ -81,6 +82,12 @@ Electron Builder configuration lives in `electron-builder.config.js`. Auto updat
    ```
    The `release.yml` workflow will build unsigned macOS (`.dmg` + `.zip`) and Windows (`.exe` + `.msi`) installers, upload them to the tagged GitHub Release, and publish `latest.yml`/`latest.json` for auto-update.
 5. **Ship future updates** ? repeat the bump/tag process for each release. Clients that have installed a previous build will see update prompts from `electron-updater` once the new release assets are available.
+
+### Reproducing the publish job locally
+
+- `pnpm ci:publish -- --dry-run` runs the same build + packaging path that CI executes while skipping the GitHub upload. Use this to debug publish failures from any OS.
+- Omit `--dry-run` (or call `pnpm package:publish`) once you are ready to push artifacts. Ensure `GH_TOKEN` (or `GITHUB_TOKEN`) is present in your environment before triggering a real publish.
+- Additional flags (for example `--publish-mode onTagOrDraft` or `--skip-build`) may be passed after `--` to tweak behaviour when troubleshooting platform-specific CI jobs.
 
 ## Continuous Integration
 
