@@ -118,7 +118,7 @@ jobs:
             dist/*.exe
           generate_release_notes: true
 
-      - name: Upload .dmg to Latest prerelease (main)
+      - name: Upload .dmg to Latest release (main)
         if: github.ref == 'refs/heads/main'
         uses: svenstaro/upload-release-action@v2
         with:
@@ -128,9 +128,9 @@ jobs:
           file: dist/*.dmg
           file_glob: true
           overwrite: true
-          prerelease: true
+          prerelease: false
 
-      - name: Upload .exe to Latest prerelease (main)
+      - name: Upload .exe to Latest release (main)
         if: github.ref == 'refs/heads/main'
         uses: svenstaro/upload-release-action@v2
         with:
@@ -140,4 +140,4 @@ jobs:
           file: dist/*.exe
           file_glob: true
           overwrite: true
-          prerelease: true
+          prerelease: false
