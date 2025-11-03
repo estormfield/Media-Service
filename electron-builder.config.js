@@ -41,12 +41,19 @@ const config = {
   },
   mac: {
     category: 'public.app-category.games',
-    target: ['dmg', 'zip'],
-    artifactName: 'tenfoot-launcher-${version}-${os}-${arch}.${ext}',
+    target: [
+      { target: 'dmg', arch: ['universal'] },
+      { target: 'zip', arch: ['universal'] },
+    ],
+    artifactName: 'tenfoot-launcher-${version}-mac.${ext}',
     hardenedRuntime: false,
     gatekeeperAssess: false,
     entitlements: null,
     publish: ['github'],
+    universalApp: {
+      archs: ['x64', 'arm64'],
+      mergeASARs: true,
+    },
   },
   dmg: {
     sign: false,
