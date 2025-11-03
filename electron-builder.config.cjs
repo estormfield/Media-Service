@@ -43,12 +43,8 @@ const config = {
         target: 'nsis',
         arch: ['x64'],
       },
-      {
-        target: 'msi',
-        arch: ['x64'],
-      },
     ],
-    icon: 'resources/icon.ico',
+    icon: 'icon.ico',
     artifactName: 'tenfoot-launcher-${version}-${os}-${arch}.${ext}',
     publish: ['github'],
   },
@@ -56,9 +52,6 @@ const config = {
     oneClick: false,
     perMachine: true,
     allowToChangeInstallationDirectory: true,
-  },
-  msi: {
-    perMachine: true,
   },
   mac: {
     category: 'public.app-category.games',

@@ -86,10 +86,8 @@ jobs:
           name: release-windows-installers
           path: |
             release/*.exe
-            release/*.msi
             release/*.yml
             release/*.blockmap
-            release/*.yml
           if-no-files-found: error
 
   release:
