@@ -44,8 +44,9 @@ jobs:
         run: pnpm lint
 
       - name: Check formatting
+        shell: bash
         run: |
-          pnpm format:check || echo "::warning::Prettier formatting issues detected. Run pnpm format to fix."
+          pnpm format:check || (echo "::warning::Prettier formatting issues detected. Run pnpm format to fix." && exit 0)
 
       - name: Typecheck
         run: pnpm typecheck

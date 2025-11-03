@@ -56,6 +56,9 @@ export default defineConfig(({ mode }) => ({
             sourcemap: mode !== 'production',
             rollupOptions: {
               external: ['electron'],
+              output: {
+                entryFileNames: 'index.js',
+              },
             },
           },
         },

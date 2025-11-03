@@ -16,6 +16,18 @@ export default function App() {
 
   useEffect(() => {
     let mounted = true;
+
+    // Check if window.api is available (preload script loaded correctly)
+    if (!window.api) {
+      console.error('window.api is not available. Preload script may have failed to load.');
+      if (mounted) {
+        setError('Preload script failed to load. The application cannot function without it.');
+      }
+      return () => {
+        mounted = false;
+      };
+    }
+
     window.api
       .getBootstrap()
       .then((payload) => {

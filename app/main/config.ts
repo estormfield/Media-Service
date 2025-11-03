@@ -39,7 +39,7 @@ function getFallbackConfigPath(): string {
     const resourcesPath = path.join(process.resourcesPath, 'app', FALLBACK_CONFIG_PATH);
     // Try __dirname relative path (fallback)
     const dirnamePath = path.resolve(__dirname, '../../', FALLBACK_CONFIG_PATH);
-    
+
     // Check each path in order
     for (const tryPath of [appPath, unpackedPath, resourcesPath, dirnamePath]) {
       try {
