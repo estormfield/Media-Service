@@ -1,6 +1,13 @@
 import log from 'electron-log';
 
-log.initialize({ preload: true });
+// In unit test environments (no Electron), electron-log.initialize may not be available
+try {
+  if (process.versions?.electron) {
+    log.initialize({ preload: true });
+  }
+} catch {
+  // no-op in non-Electron environments
+}
 
 export const logger = log.create({ logId: 'main' });
 

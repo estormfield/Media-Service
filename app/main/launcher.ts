@@ -4,6 +4,14 @@ import type { AppConfig, LauncherEntry } from '@shared/schema.js';
 import type { LaunchEntryPayload } from '@shared/ipc.js';
 import { logger } from './logger.js';
 
+let externalLaunchInProgress = false;
+export function setExternalLaunchInProgress(next: boolean): void {
+  externalLaunchInProgress = next;
+}
+export function isExternalLaunchInProgress(): boolean {
+  return externalLaunchInProgress;
+}
+
 function focusMainWindowAggressive() {
   const win = BrowserWindow.getAllWindows()[0];
   if (!win) return;
@@ -33,7 +41,31 @@ function resolveEntry(config: AppConfig, payload: LaunchEntryPayload): LauncherE
   return entry;
 }
 
+function tryForceFullscreenMac(delayMs = 1200) {
+  if (process.platform !== 'darwin') return;
+  try {
+    setTimeout(() => {
+      try {
+        const child = spawn(
+          'osascript',
+          [
+            '-e',
+            'tell application "System Events" to keystroke "f" using {control down, command down}',
+          ],
+          { detached: true, stdio: 'ignore' },
+        );
+        child.unref();
+      } catch {
+        // noop
+      }
+    }, delayMs);
+  } catch {
+    // noop
+  }
+}
+
 function spawnDetached(command: string, args: string[], workingDirectory?: string) {
+  setExternalLaunchInProgress(true);
   // macOS: Handle .app bundles using 'open' command with -W to wait
   if (process.platform === 'darwin' && /\.app$/i.test(command)) {
     logger.info('Launching macOS app bundle: %s', command);
@@ -47,9 +79,11 @@ function spawnDetached(command: string, args: string[], workingDirectory?: strin
       stdio: 'ignore',
     });
     child.on('close', () => {
+      setExternalLaunchInProgress(false);
       focusMainWindowAggressive();
     });
     child.unref();
+    tryForceFullscreenMac();
     return;
   }
 
@@ -62,9 +96,11 @@ function spawnDetached(command: string, args: string[], workingDirectory?: strin
     stdio: 'ignore',
   });
   child.on('close', () => {
+    setExternalLaunchInProgress(false);
     focusMainWindowAggressive();
   });
   child.unref();
+  tryForceFullscreenMac();
 }
 
 export async function getDefaultBrowser(): Promise<string> {

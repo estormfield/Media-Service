@@ -1,4 +1,5 @@
 import { BrowserWindow, app } from 'electron';
+import { isExternalLaunchInProgress } from './launcher.js';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { logger } from './logger.js';
@@ -43,7 +44,9 @@ export async function createMainWindow(): Promise<BrowserWindow> {
     logger.info('Main window closed');
   });
 
+  // Guarded auto-refocus: only if no app window is focused AND no external launch is in progress
   win.on('blur', () => {
+    if (isExternalLaunchInProgress()) return; // do not fight external apps
     const focused = BrowserWindow.getFocusedWindow();
     if (focused) return; // another window of this app is focused (e.g., kiosk)
     setTimeout(() => {
