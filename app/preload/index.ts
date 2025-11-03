@@ -7,6 +7,8 @@ const api = {
     ipcRenderer.invoke(IPC_CHANNELS.LAUNCH_ENTRY, payload),
   setAutoStart: (enabled: boolean): Promise<boolean> =>
     ipcRenderer.invoke(IPC_CHANNELS.AUTO_START_ENABLE, enabled),
+  pickFile: (): Promise<string | null> => ipcRenderer.invoke(IPC_CHANNELS.DIALOG_PICK_FILE),
+  getDefaultBrowser: (): Promise<string | null> => ipcRenderer.invoke(IPC_CHANNELS.GET_DEFAULT_BROWSER),
 };
 
 contextBridge.exposeInMainWorld('api', api);

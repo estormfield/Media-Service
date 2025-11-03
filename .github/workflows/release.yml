@@ -7,6 +7,9 @@ on:
     tags:
       - 'v*'
 
+permissions:
+  contents: write
+
 jobs:
   build:
     name: Build ${{ matrix.os }}
@@ -64,8 +67,8 @@ jobs:
           path: test-results
           if-no-files-found: warn
 
-      - name: Package and publish
-        run: pnpm package:publish
+      - name: Package (no publish)
+        run: pnpm package
 
       - name: Upload macOS artifacts
         if: matrix.os == 'macos-latest'
@@ -74,7 +77,6 @@ jobs:
           name: release-macos-dmg
           path: |
             release/*.dmg
-            release/*.exe
           if-no-files-found: error
 
       - name: Upload Windows artifacts
@@ -89,3 +91,55 @@ jobs:
             release/*.blockmap
             release/*.yml
           if-no-files-found: error
+
+  release:
+    name: Attach assets to GitHub Release
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Download macOS dmg
+        uses: actions/download-artifact@v4
+        with:
+          name: release-macos-dmg
+          path: dist
+
+      - name: Download Windows installers
+        uses: actions/download-artifact@v4
+        with:
+          name: release-windows-installers
+          path: dist
+
+      - name: Upload .dmg and .exe to tag Release
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            dist/*.dmg
+            dist/*.exe
+          generate_release_notes: true
+
+      - name: Upload .dmg to Latest prerelease (main)
+        if: github.ref == 'refs/heads/main'
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          tag: latest
+          release_name: Latest
+          file: dist/*.dmg
+          file_glob: true
+          overwrite: true
+          prerelease: true
+
+      - name: Upload .exe to Latest prerelease (main)
+        if: github.ref == 'refs/heads/main'
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          tag: latest
+          release_name: Latest
+          file: dist/*.exe
+          file_glob: true
+          overwrite: true
+          prerelease: true

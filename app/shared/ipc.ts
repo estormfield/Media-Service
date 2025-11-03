@@ -7,6 +7,8 @@ export const IPC_CHANNELS = {
   OPEN_PROFILE_PICKER: 'ui:openProfilePicker',
   AUTO_START_STATUS: 'system:autoStartStatus',
   AUTO_START_ENABLE: 'system:autoStartEnable',
+  DIALOG_PICK_FILE: 'dialog:pickFile',
+  GET_DEFAULT_BROWSER: 'system:getDefaultBrowser',
 } as const;
 
 export type IpcChannel = (typeof IPC_CHANNELS)[keyof typeof IPC_CHANNELS];

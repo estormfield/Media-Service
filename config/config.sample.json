@@ -16,33 +16,21 @@
       "displayName": "Family",
       "tiles": [
         {
-          "kind": "youtube",
-          "id": "youtube-kids",
-          "title": "YouTube Kids",
-          "subtitle": "Launch dedicated browser window",
+          "kind": "web",
+          "id": "youtube-tv",
+          "title": "YouTube TV",
+          "subtitle": "Full screen YouTube experience",
           "url": "https://www.youtube.com/tv",
-          "browserPath": "C:/Program Files/Google/Chrome/Application/chrome.exe",
-          "browserArgs": ["--app=%URL%", "--kiosk", "--no-first-run"],
           "artwork": "https://i.imgur.com/NvM0QkP.jpg"
         },
         {
-          "kind": "emby",
-          "id": "emby-theater",
-          "title": "Emby Theater",
-          "subtitle": "Full screen media player",
-          "executable": "C:/Users/Public/Emby Theater/Emby.Theater.exe",
-          "args": [],
-          "artwork": "https://i.imgur.com/aVfFh46.jpg"
-        },
-        {
-          "kind": "game",
-          "id": "rocket-league",
-          "title": "Rocket League",
-          "subtitle": "Direct EXE launch",
-          "executable": "C:/Games/RocketLeague/RocketLeague.exe",
-          "args": [],
-          "workingDirectory": "C:/Games/RocketLeague",
-          "artwork": "https://i.imgur.com/ZXnJdmS.jpg"
+          "kind": "youtube",
+          "id": "youtube-kids",
+          "title": "YouTube Kids",
+          "subtitle": "Launch in external browser",
+          "url": "https://www.youtube.com/tv",
+          "browserArgs": ["--app=%URL%", "--kiosk", "--no-first-run"],
+          "artwork": "https://i.imgur.com/NvM0QkP.jpg"
         }
       ]
     },
@@ -51,21 +39,11 @@
       "displayName": "Guests",
       "tiles": [
         {
-          "kind": "youtube",
+          "kind": "web",
           "id": "youtube-music",
           "title": "YouTube Music",
-          "subtitle": "Music mode",
-          "url": "https://music.youtube.com",
-          "browserPath": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
-          "browserArgs": ["--app=%URL%"]
-        },
-        {
-          "kind": "game",
-          "id": "hades",
-          "title": "Hades",
-          "subtitle": "Steam independent launch",
-          "executable": "/Applications/Hades.app/Contents/MacOS/Hades",
-          "args": []
+          "subtitle": "Music streaming",
+          "url": "https://music.youtube.com"
         }
       ]
     }
