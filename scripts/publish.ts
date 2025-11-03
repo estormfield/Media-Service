@@ -148,7 +148,7 @@ async function main(): Promise<void> {
       await runCommand('pnpm', ['build'], options.verbose);
     }
 
-    const builderArgs = ['exec', 'electron-builder', '--config', 'electron-builder.config.js'];
+    const builderArgs = ['exec', 'electron-builder', '--config', 'electron-builder.config.cjs'];
 
     if (publishMode) {
       builderArgs.push('--publish', publishMode);

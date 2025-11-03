@@ -14,6 +14,7 @@ const config = {
     buildResources: 'resources',
   },
   files: ['dist/main/**/*', 'dist/preload/**/*', 'dist/renderer/**/*', 'config/**', 'package.json'],
+  asarUnpack: ['config/**'],
   extraMetadata: {
     main: 'dist/main/index.js',
   },

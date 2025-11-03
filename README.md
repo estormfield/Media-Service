@@ -68,7 +68,7 @@ Respectfully disabled when `settings.autoStart` is false.
 - `pnpm package:publish` ? same as above plus publish update assets to GitHub Releases (`GH_TOKEN` required)
 - `pnpm package:publish:dry-run` ? run the full publish pipeline locally without uploading to GitHub (packages land in `release/`)
 
-Electron Builder configuration lives in `electron-builder.config.js`. Auto updates rely on GitHub releases via `electron-updater`.
+Electron Builder configuration lives in `electron-builder.config.cjs`. Auto updates rely on GitHub releases via `electron-updater`.
 
 ### GitHub Release & Auto-update Setup
 

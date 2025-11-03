@@ -73,8 +73,7 @@ jobs:
           name: release-macos-dmg
           path: |
             release/*.dmg
-            release/*.blockmap
-            release/*.yml
+            release/*.exe
           if-no-files-found: error
 
       - name: Upload Windows artifacts
@@ -85,5 +84,7 @@ jobs:
           path: |
             release/*.exe
             release/*.msi
+            release/*.yml
+            release/*.blockmap
             release/*.yml
           if-no-files-found: error

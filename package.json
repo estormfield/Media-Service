@@ -25,8 +25,8 @@
     "ci:publish": "tsx scripts/publish.ts",
     "package:publish": "pnpm ci:publish -- --ci",
     "package:publish:dry-run": "pnpm ci:publish -- --dry-run",
-    "electron:package": "electron-builder --config electron-builder.config.js",
-    "electron:publish": "electron-builder --config electron-builder.config.js --publish always",
+    "electron:package": "electron-builder --config electron-builder.config.cjs",
+    "electron:publish": "electron-builder --config electron-builder.config.cjs --publish always",
     "electron": "electron .",
     "postinstall": "playwright install --with-deps"
   },
