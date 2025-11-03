@@ -39,7 +39,13 @@ pnpm validate:config   # optional: validate your system config JSON
 
 ## Configuration
 
-The launcher reads a system-wide JSON config at startup only. Default lookup order:
+The launcher reads configuration at startup with the following priority order:
+
+1. **User config** (if exists): `{userData}/config.json` (platform-specific user data directory)
+2. **System config** (if exists): Platform-specific path or `TENFOOT_CONFIG_PATH` env var
+3. **Bundled sample**: Falls back to `config/config.sample.json`
+
+System-wide config paths:
 
 | Platform                     | Path                                                       |
 | ---------------------------- | ---------------------------------------------------------- |
@@ -51,7 +57,22 @@ Override with `TENFOOT_CONFIG_PATH=/path/to/config.json`.
 
 Bundled sample: `config/config.sample.json`
 
-Schema enforced via `zod` (`app/shared/schema.ts`). Tiles support YouTube (browser app window), Emby Theater, and arbitrary executables.
+Schema enforced via `zod` (`app/shared/schema.ts`). Tiles support:
+
+- **Web**: Opens URLs in a locked Electron kiosk window (navigation restricted to the same domain)
+- **YouTube**: Launches external browser with app mode (uses default browser if `browserPath` not specified)
+- **Emby/Game**: Executes native applications
+
+### Adding Tiles via UI
+
+1. Navigate to a profile's tile view
+2. Click the **"+ Add Tile"** button in the header
+3. Choose **Web** or **App** tab:
+   - **Web**: Enter title, URL, and optional artwork URL
+   - **App**: Enter title, browse for executable path, optional arguments, working directory, and artwork URL
+4. Click **"Add Tile"** to save
+
+New tiles are saved to the user config (`{userData}/config.json`) and persist across app restarts. The UI automatically reloads after saving.
 
 ## Auto-start behaviour
 
@@ -118,4 +139,21 @@ tests/
 - **Emby**: executes configured Emby Theater binary
 - **Game/Executable**: spawns provided process with args, detaching from the launcher
 
-Home/Back keys (including IR remote equivalents) return to the profile picker; Enter launches focused tiles. DPAD support provided via `useDpadNavigation` hook.
+## Navigation & Controls
+
+### Main Launcher UI
+
+- **DPAD/Arrow Keys**: Navigate between tiles and profiles
+- **Enter**: Launch focused tile
+- **Back/Home/Escape**: Return to profile picker
+
+### Web Kiosk Mode
+
+When launching a **Web** tile, the app opens in full-screen kiosk mode with domain restrictions. To return to the launcher:
+
+- **Keyboard**: Press `Escape`, `Backspace`, or `BrowserBack` key
+- **IR Remote**: Use back/home button (typically maps to Backspace)
+- **Gamepad**: Press `B` button
+- **Mouse**: Click the **"← Back to Home"** button in the top-left corner
+
+The back button overlay is always visible for easy access. Navigation outside the original domain is blocked, and new windows/popups are prevented.

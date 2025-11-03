@@ -1,0 +1,4 @@
+---
+alwaysApply: true
+---
+Always run all CI commands including package before you should consider any instruction finished. See Agents.md file

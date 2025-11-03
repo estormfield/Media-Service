@@ -1,3 +1,7 @@
+.launcher-tile-wrapper {
+  position: relative;
+}
+
 .launcher-tile {
   position: relative;
   display: flex;
@@ -13,6 +17,11 @@
   overflow: hidden;
   cursor: pointer;
   transition: transform 120ms ease, border-color 120ms ease, box-shadow 120ms ease;
+}
+
+.launcher-tile:disabled {
+  cursor: default;
+  opacity: 0.7;
 }
 
 .launcher-tile:hover,
@@ -72,4 +81,51 @@
   background: rgba(0, 0, 0, 0.65);
   font-size: 0.75rem;
   letter-spacing: 0.15rem;
+}
+
+.launcher-tile__overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  background: rgba(0, 0, 0, 0.75);
+  border-radius: 24px;
+  z-index: 10;
+}
+
+.launcher-tile__edit-btn,
+.launcher-tile__delete-btn {
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  border: 2px solid;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 120ms ease, box-shadow 120ms ease;
+}
+
+.launcher-tile__edit-btn {
+  background: rgba(0, 255, 191, 0.2);
+  border-color: #00ffbf;
+  color: #00ffbf;
+}
+
+.launcher-tile__edit-btn:hover {
+  background: rgba(0, 255, 191, 0.3);
+  transform: scale(1.05);
+  box-shadow: 0 0 20px rgba(0, 255, 191, 0.4);
+}
+
+.launcher-tile__delete-btn {
+  background: rgba(255, 0, 0, 0.2);
+  border-color: #ff0000;
+  color: #ff0000;
+}
+
+.launcher-tile__delete-btn:hover {
+  background: rgba(255, 0, 0, 0.3);
+  transform: scale(1.05);
+  box-shadow: 0 0 20px rgba(255, 0, 0, 0.4);
 }

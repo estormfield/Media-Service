@@ -31,7 +31,7 @@ function spawnDetached(command: string, args: string[], workingDirectory?: strin
 
 export async function getDefaultBrowser(): Promise<string> {
   const platform = process.platform;
-  
+
   if (platform === 'darwin') {
     // macOS: Try common browsers in order
     const commonBrowsers = [
@@ -83,14 +83,14 @@ export async function getDefaultBrowser(): Promise<string> {
       }
     }
   }
-  
+
   throw new Error('No default browser found');
 }
 
 function launchWeb(entry: Extract<LauncherEntry, { kind: 'web' }>) {
   const url = new URL(entry.url);
   const allowedHost = url.host;
-  
+
   const win = new BrowserWindow({
     kiosk: true,
     fullscreen: true,
@@ -102,7 +102,7 @@ function launchWeb(entry: Extract<LauncherEntry, { kind: 'web' }>) {
       sandbox: true,
     },
   });
-  
+
   // Block navigation outside the domain
   win.webContents.on('will-navigate', (event, navigationUrl) => {
     try {
@@ -115,19 +115,115 @@ function launchWeb(entry: Extract<LauncherEntry, { kind: 'web' }>) {
       event.preventDefault();
     }
   });
-  
+
   // Block new window opens
   win.webContents.setWindowOpenHandler(() => {
     return { action: 'deny' };
   });
-  
+
+  // Close on back navigation keys (IR remote, keyboard, gamepad)
+  win.webContents.on('before-input-event', (event, input) => {
+    const key = input.key.toLowerCase();
+    const code = input.code.toLowerCase();
+
+    // Escape, Backspace, BrowserBack
+    if (key === 'escape' || key === 'backspace' || code === 'browserback') {
+      win.close();
+      event.preventDefault();
+      return;
+    }
+
+    // Gamepad B button (common on TV remotes)
+    if (code === 'keyb' && input.type === 'keyDown') {
+      win.close();
+      event.preventDefault();
+      return;
+    }
+  });
+
+  // Create overlay window with back button
+  const overlay = new BrowserWindow({
+    width: 200,
+    height: 60,
+    frame: false,
+    transparent: true,
+    alwaysOnTop: true,
+    skipTaskbar: true,
+    resizable: false,
+    webPreferences: {
+      nodeIntegration: false,
+      contextIsolation: true,
+      sandbox: true,
+    },
+  });
+
+  // Position overlay at top-left
+  const overlayHTML = `
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <style>
+          body {
+            margin: 0;
+            padding: 0;
+            background: transparent;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            font-family: system-ui, sans-serif;
+          }
+          button {
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            margin: 8px;
+            transition: all 120ms ease;
+          }
+          button:hover {
+            background: rgba(0, 0, 0, 0.9);
+            border-color: rgba(255, 255, 255, 0.8);
+          }
+        </style>
+      </head>
+      <body>
+        <button id="back-btn">← Back to Home</button>
+        <script>
+          document.getElementById('back-btn').addEventListener('click', () => {
+            window.close();
+          });
+        </script>
+      </body>
+    </html>
+  `;
+
+  overlay.loadURL(`data:text/html;charset=utf-8,${encodeURIComponent(overlayHTML)}`);
+
+  // Close overlay when kiosk window closes
+  win.on('closed', () => {
+    if (!overlay.isDestroyed()) {
+      overlay.close();
+    }
+  });
+
+  // Close kiosk when overlay window closes
+  overlay.on('closed', () => {
+    if (!win.isDestroyed()) {
+      win.close();
+    }
+  });
+
   win.loadURL(entry.url);
   logger.info('Launched web kiosk window for %s', entry.url);
 }
 
 async function launchYoutube(entry: Extract<LauncherEntry, { kind: 'youtube' }>) {
   let browserPath = entry.browserPath;
-  
+
   if (!browserPath) {
     try {
       browserPath = await getDefaultBrowser();
@@ -137,7 +233,7 @@ async function launchYoutube(entry: Extract<LauncherEntry, { kind: 'youtube' }>)
       throw new Error('No browser configured and default browser not found');
     }
   }
-  
+
   const preparedArgs = entry.browserArgs.map((value) => value.replace('%URL%', entry.url));
   spawnDetached(browserPath, preparedArgs);
 }
@@ -146,7 +242,10 @@ function launchExecutable(entry: Extract<LauncherEntry, { kind: 'emby' | 'game' 
   spawnDetached(entry.executable, entry.args, entry.workingDirectory);
 }
 
-export async function launchConfiguredEntry(config: AppConfig, payload: LaunchEntryPayload): Promise<void> {
+export async function launchConfiguredEntry(
+  config: AppConfig,
+  payload: LaunchEntryPayload,
+): Promise<void> {
   const entry = resolveEntry(config, payload);
   if (!entry) {
     return;

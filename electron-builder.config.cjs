@@ -18,6 +18,25 @@ const config = {
   extraMetadata: {
     main: 'dist/main/index.js',
   },
+  beforePack: async () => {
+    const fs = require('fs');
+    const path = require('path');
+    const projectRoot = __dirname;
+    const destDir = path.join(projectRoot, 'resources');
+    const dest = path.join(destDir, 'icon.ico');
+    if (!fs.existsSync(dest)) {
+      // Try to find Electron's built-in icon
+      const electronPath = require.resolve('electron/package.json');
+      const electronDir = path.dirname(electronPath);
+      const electronIco = path.join(electronDir, 'dist', 'resources', 'electron.ico');
+      if (fs.existsSync(electronIco)) {
+        if (!fs.existsSync(destDir)) {
+          fs.mkdirSync(destDir, { recursive: true });
+        }
+        fs.copyFileSync(electronIco, dest);
+      }
+    }
+  },
   win: {
     target: [
       {
@@ -29,6 +48,7 @@ const config = {
         arch: ['x64'],
       },
     ],
+    icon: 'resources/icon.ico',
     artifactName: 'tenfoot-launcher-${version}-${os}-${arch}.${ext}',
     publish: ['github'],
   },

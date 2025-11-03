@@ -2,6 +2,7 @@ import type { AppConfig } from './schema.js';
 
 export const IPC_CHANNELS = {
   CONFIG_GET: 'config:get',
+  CONFIG_SAVE: 'config:save',
   LAUNCH_ENTRY: 'launcher:launch',
   PROFILE_SELECTED: 'profile:selected',
   OPEN_PROFILE_PICKER: 'ui:openProfilePicker',

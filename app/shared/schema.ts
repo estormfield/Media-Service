@@ -44,7 +44,7 @@ export const launcherEntrySchema = z.discriminatedUnion('kind', [
 export const profileSchema = z.object({
   id: z.string().min(1),
   displayName: z.string().min(1),
-  tiles: z.array(launcherEntrySchema).min(1),
+  tiles: z.array(launcherEntrySchema).default([]),
 });
 
 export const settingsSchema = z.object({

@@ -9,6 +9,9 @@ interface LauncherGridProps {
   isActive: boolean;
   onLaunch: (entryId: string) => void;
   onBack: () => void;
+  editMode: boolean;
+  onEdit: (entry: LauncherEntry) => void;
+  onDelete: (entryId: string) => void;
 }
 
 export default function LauncherGrid({
@@ -17,11 +20,14 @@ export default function LauncherGrid({
   isActive,
   onLaunch,
   onBack,
+  editMode,
+  onEdit,
+  onDelete,
 }: LauncherGridProps) {
   const navigation = useDpadNavigation({
     itemCount: tiles.length,
     columns: 3,
-    isActive,
+    isActive: isActive && !editMode,
     onSelect: (index) => {
       const tile = tiles[index];
       if (tile) {
@@ -41,11 +47,16 @@ export default function LauncherGrid({
             focused={navigation.isFocused(index)}
             onActivate={() => onLaunch(tile.id)}
             onFocus={() => navigation.requestFocus(index)}
+            editMode={editMode}
+            onEdit={onEdit}
+            onDelete={onDelete}
           />
         ))}
       </div>
       <div className="launcher-grid__hint">
-        DPAD to navigate ? Enter to launch ? Back/Home to switch profiles
+        {editMode
+          ? 'Click Edit or Delete on tiles to modify them'
+          : 'DPAD to navigate ? Enter to launch ? Back/Home to switch profiles'}
       </div>
     </section>
   );

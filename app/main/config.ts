@@ -11,6 +11,10 @@ let cachedConfigPath: string | null = null;
 
 const __dirname = fileURLToPath(new URL('.', import.meta.url));
 
+export function getUserConfigPath(): string {
+  return path.join(app.getPath('userData'), 'config.json');
+}
+
 export function getConfigPath(): string {
   if (cachedConfigPath) {
     return cachedConfigPath;
@@ -62,16 +66,31 @@ export async function loadConfig(): Promise<AppConfig> {
     return cachedConfig;
   }
 
+  // Priority 1: User config (userData/config.json)
+  const userConfigPath = getUserConfigPath();
+  try {
+    if (await fs.pathExists(userConfigPath)) {
+      const raw = await fs.readJSON(userConfigPath);
+      cachedConfig = validateConfig(raw);
+      logger.info('Loaded config from user data: %s', userConfigPath);
+      return cachedConfig;
+    }
+  } catch (error) {
+    logger.warn('Failed to load user config from %s: %s', userConfigPath, error);
+  }
+
+  // Priority 2: System config (env var or platform-specific path)
   const configPath = getConfigPath();
   try {
     const raw = await fs.readJSON(configPath);
     cachedConfig = validateConfig(raw);
-    logger.info('Loaded config from %s', configPath);
+    logger.info('Loaded config from system path: %s', configPath);
     return cachedConfig;
   } catch (error) {
     logger.warn('Failed to load system config from %s: %s', configPath, error);
   }
 
+  // Priority 3: Bundled fallback config
   const fallback = getFallbackConfigPath();
   logger.info('Falling back to bundled config at %s', fallback);
   try {
@@ -83,6 +102,22 @@ export async function loadConfig(): Promise<AppConfig> {
     logger.error('Failed to load fallback config from %s: %s', fallback, error);
     throw new Error(`Unable to load configuration: ${error}`);
   }
+}
+
+export async function saveConfig(config: AppConfig): Promise<void> {
+  // Validate before saving
+  const validated = validateConfig(config);
+
+  // Save to user config path
+  const userConfigPath = getUserConfigPath();
+  await fs.ensureDir(path.dirname(userConfigPath));
+  await fs.writeJSON(userConfigPath, validated, { spaces: 2 });
+
+  // Clear cache so next load will use the new config
+  cachedConfig = null;
+  cachedConfigPath = null;
+
+  logger.info('Saved config to %s', userConfigPath);
 }
 
 export function resetCachedConfig(): void {

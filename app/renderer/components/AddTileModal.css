@@ -1,0 +1,196 @@
+.add-tile-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.add-tile-modal {
+  background: #1a1a1a;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+  color: #ffffff;
+}
+
+.add-tile-modal__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.add-tile-modal__header h2 {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.add-tile-modal__close {
+  background: transparent;
+  border: none;
+  color: #ffffff;
+  font-size: 2rem;
+  cursor: pointer;
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: background 120ms ease;
+}
+
+.add-tile-modal__close:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.add-tile-modal__tabs {
+  display: flex;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.add-tile-modal__tab {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.6);
+  padding: 1rem;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 120ms ease;
+  border-bottom: 2px solid transparent;
+}
+
+.add-tile-modal__tab:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.add-tile-modal__tab--active {
+  color: #ffffff;
+  border-bottom-color: #ffffff;
+}
+
+.add-tile-modal__content {
+  padding: 1.5rem;
+}
+
+.add-tile-modal__form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.add-tile-modal__field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.add-tile-modal__field label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.add-tile-modal__field input {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  padding: 0.75rem;
+  color: #ffffff;
+  font-size: 1rem;
+  transition: all 120ms ease;
+}
+
+.add-tile-modal__field input:focus {
+  outline: none;
+  border-color: rgba(255, 255, 255, 0.4);
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.add-tile-modal__field input::placeholder {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.add-tile-modal__file-picker {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.add-tile-modal__file-picker input {
+  flex: 1;
+}
+
+.add-tile-modal__file-picker button {
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: #ffffff;
+  padding: 0.75rem 1.5rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: all 120ms ease;
+  white-space: nowrap;
+}
+
+.add-tile-modal__file-picker button:hover {
+  background: rgba(255, 255, 255, 0.25);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+.add-tile-modal__actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.add-tile-modal__actions button {
+  padding: 0.75rem 1.5rem;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 120ms ease;
+  border: none;
+}
+
+.add-tile-modal__actions button[type="button"] {
+  background: transparent;
+  color: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.add-tile-modal__actions button[type="button"]:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+}
+
+.add-tile-modal__actions button[type="submit"] {
+  background: rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.add-tile-modal__actions button[type="submit"]:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.add-tile-modal__actions button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+

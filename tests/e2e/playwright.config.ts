@@ -6,7 +6,7 @@ export default defineConfig({
   fullyParallel: false,
   reporter: [['list']],
   use: {
-    headless: false,
+    headless: true,
     viewport: { width: 2560, height: 1440 },
     baseURL: 'http://127.0.0.1:5173',
     video: 'on',

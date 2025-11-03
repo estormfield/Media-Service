@@ -1,9 +1,11 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import type { AppConfig, Profile } from '@shared/schema.js';
+import type { AppConfig, Profile, LauncherEntry } from '@shared/schema.js';
 import LoadingScreen from './components/LoadingScreen.js';
 import ProfilePicker from './components/ProfilePicker.js';
 import LauncherGrid from './components/LauncherGrid.js';
 import Header from './components/Header.js';
+import AddTileModal from './components/AddTileModal.js';
+import EditTileModal from './components/EditTileModal.js';
 
 type View = 'profiles' | 'tiles';
 
@@ -13,6 +15,9 @@ export default function App() {
   const [view, setView] = useState<View>('profiles');
   const [selectedProfileId, setSelectedProfileId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [editMode, setEditMode] = useState(false);
+  const [editingTile, setEditingTile] = useState<LauncherEntry | null>(null);
 
   useEffect(() => {
     let mounted = true;
@@ -80,6 +85,109 @@ export default function App() {
     setAutoStartEnabled(confirmed);
   }, []);
 
+  const handleAddTile = useCallback(
+    async (entry: LauncherEntry) => {
+      if (!config || !selectedProfileId) {
+        return;
+      }
+
+      const updatedConfig: AppConfig = {
+        ...config,
+        profiles: config.profiles.map((profile) =>
+          profile.id === selectedProfileId
+            ? {
+                ...profile,
+                tiles: [...profile.tiles, entry],
+              }
+            : profile,
+        ),
+      };
+
+      try {
+        const savedConfig = await window.api.saveConfig(updatedConfig);
+        setConfig(savedConfig);
+      } catch (error) {
+        console.error('Failed to save config:', error);
+        throw error;
+      }
+    },
+    [config, selectedProfileId],
+  );
+
+  const handleToggleEditMode = useCallback((next: boolean) => {
+    setEditMode(next);
+    if (!next) {
+      setEditingTile(null);
+    }
+  }, []);
+
+  const handleStartEdit = useCallback((entry: LauncherEntry) => {
+    setEditingTile(entry);
+  }, []);
+
+  const handleUpdateTile = useCallback(
+    async (updated: LauncherEntry) => {
+      if (!config || !selectedProfileId) {
+        return;
+      }
+
+      const updatedConfig: AppConfig = {
+        ...config,
+        profiles: config.profiles.map((profile) =>
+          profile.id === selectedProfileId
+            ? {
+                ...profile,
+                tiles: profile.tiles.map((tile) => (tile.id === updated.id ? updated : tile)),
+              }
+            : profile,
+        ),
+      };
+
+      try {
+        const savedConfig = await window.api.saveConfig(updatedConfig);
+        setConfig(savedConfig);
+        setEditingTile(null);
+      } catch (error) {
+        console.error('Failed to save config:', error);
+        throw error;
+      }
+    },
+    [config, selectedProfileId],
+  );
+
+  const handleDeleteTile = useCallback(
+    async (entryId: string) => {
+      if (!config || !selectedProfileId) {
+        return;
+      }
+
+      if (!confirm('Are you sure you want to delete this tile?')) {
+        return;
+      }
+
+      const updatedConfig: AppConfig = {
+        ...config,
+        profiles: config.profiles.map((profile) =>
+          profile.id === selectedProfileId
+            ? {
+                ...profile,
+                tiles: profile.tiles.filter((tile) => tile.id !== entryId),
+              }
+            : profile,
+        ),
+      };
+
+      try {
+        const savedConfig = await window.api.saveConfig(updatedConfig);
+        setConfig(savedConfig);
+      } catch (error) {
+        console.error('Failed to save config:', error);
+        throw error;
+      }
+    },
+    [config, selectedProfileId],
+  );
+
   if (error) {
     return (
       <div className="app-error" role="alert">
@@ -109,6 +217,9 @@ export default function App() {
         autoStartEnabled={autoStartEnabled}
         onAutoStartChange={handleAutoStartChange}
         onBack={handleBackToProfiles}
+        onAddTile={() => setShowAddModal(true)}
+        editMode={editMode}
+        onToggleEditMode={handleToggleEditMode}
       />
       <LauncherGrid
         profileId={selectedProfile.id}
@@ -116,6 +227,20 @@ export default function App() {
         isActive
         onLaunch={handleLaunch}
         onBack={handleBackToProfiles}
+        editMode={editMode}
+        onEdit={handleStartEdit}
+        onDelete={handleDeleteTile}
+      />
+      <AddTileModal
+        isOpen={showAddModal}
+        onClose={() => setShowAddModal(false)}
+        onSave={handleAddTile}
+      />
+      <EditTileModal
+        isOpen={editingTile !== null}
+        tile={editingTile}
+        onClose={() => setEditingTile(null)}
+        onSave={handleUpdateTile}
       />
     </div>
   );
