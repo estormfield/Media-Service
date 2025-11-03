@@ -19,22 +19,16 @@ const config = {
     main: 'dist/main/index.js',
   },
   beforePack: async () => {
-    const fs = require('fs');
+    const { execSync } = require('child_process');
     const path = require('path');
     const projectRoot = __dirname;
-    const destDir = path.join(projectRoot, 'resources');
-    const dest = path.join(destDir, 'icon.ico');
-    if (!fs.existsSync(dest)) {
-      // Try to find Electron's built-in icon
-      const electronPath = require.resolve('electron/package.json');
-      const electronDir = path.dirname(electronPath);
-      const electronIco = path.join(electronDir, 'dist', 'resources', 'electron.ico');
-      if (fs.existsSync(electronIco)) {
-        if (!fs.existsSync(destDir)) {
-          fs.mkdirSync(destDir, { recursive: true });
-        }
-        fs.copyFileSync(electronIco, dest);
-      }
+    const generateIconScript = path.join(projectRoot, 'scripts', 'generate-ico.cjs');
+    try {
+      // Generate icon.ico before packaging
+      execSync(`node "${generateIconScript}"`, { stdio: 'inherit', cwd: projectRoot });
+    } catch (error) {
+      console.error('Failed to generate icon.ico:', error.message);
+      throw error;
     }
   },
   win: {
