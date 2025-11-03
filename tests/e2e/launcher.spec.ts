@@ -141,7 +141,7 @@ test.describe('TenFoot Launcher UI', () => {
     await editModeButton.click();
 
     // Find and click Edit on the first tile
-    const editButton = page.getByRole('button', { name: `Edit ${tileToEdit.title }` });
+    const editButton = page.getByRole('button', { name: `Edit ${tileToEdit.title}` });
     await expect(editButton).toBeVisible();
     await editButton.click();
 

@@ -28,6 +28,8 @@ pnpm validate:config
 
 ## Run the full local CI sequence (required after every change!)
 
+**IMPORTANT**: Before packaging, bump the version if this is a release. See "Version bumping" section below.
+
 ```bash
 # 1) Format (fix) then lint (fix)
 pnpm format
@@ -40,6 +42,7 @@ pnpm typecheck
 pnpm test
 
 # 4) Package (no publish) – artifacts land in release/
+# NOTE: Ensure version is bumped before packaging (see Version bumping section)
 pnpm package
 ```
 
@@ -81,10 +84,11 @@ pnpm format && pnpm lint:fix && pnpm typecheck && pnpm test && pnpm package
 ### Package (no publish)
 
 - `pnpm package` → outputs to `release/` (macOS DMG/ZIP, Windows NSIS/MSI)
+- **IMPORTANT**: Always bump the version before packaging to ensure proper versioning in artifacts
 
-### Optional publish (requires GH_TOKEN)
+### Version bumping
 
-Before publishing, you must bump the version number:
+**Required before packaging**: Bump the version number in `package.json`:
 
 1. **Bump version** in `package.json`:
 
@@ -106,21 +110,25 @@ Before publishing, you must bump the version number:
    git commit -m "chore: bump version to $(node -p "require('./package.json').version")"
    ```
 
-3. **Tag the commit**:
+### Optional publish (requires GH_TOKEN)
+
+After version bumping (see "Version bumping" section above) and packaging, you can publish:
+
+1. **Tag the commit**:
 
    ```bash
    VERSION=$(node -p "require('./package.json').version")
    git tag "v${VERSION}"
    ```
 
-4. **Push commit and tag**:
+2. **Push commit and tag**:
 
    ```bash
    git push origin main
    git push origin "v${VERSION}"
    ```
 
-5. **Publish** (CI will handle build on tag push, or run locally):
+3. **Publish** (CI will handle build on tag push, or run locally):
    - Dry run (no upload): `pnpm package:publish:dry-run`
    - Real publish: `pnpm package:publish` (requires `GH_TOKEN` env var)
 

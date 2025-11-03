@@ -1,6 +1,6 @@
 {
   "name": "tenfoot-launcher",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "private": true,
   "author": "estormfield",
   "description": "Cross-platform Electron-based 10-foot launcher with React UI and auto-updates.",

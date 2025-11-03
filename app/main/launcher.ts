@@ -19,6 +19,23 @@ function resolveEntry(config: AppConfig, payload: LaunchEntryPayload): LauncherE
 }
 
 function spawnDetached(command: string, args: string[], workingDirectory?: string) {
+  // macOS: Handle .app bundles using 'open' command
+  if (process.platform === 'darwin' && /\.app$/i.test(command)) {
+    logger.info('Launching macOS app bundle: %s', command);
+    const openArgs = ['-n', command];
+    if (args.length > 0) {
+      openArgs.push('--args', ...args);
+    }
+    const child = spawn('open', openArgs, {
+      cwd: workingDirectory,
+      detached: true,
+      stdio: 'ignore',
+    });
+    child.unref();
+    return;
+  }
+
+  // Default behavior for binaries and other platforms
   logger.info('Launching: %s %s', command, args.join(' '));
   const child = spawn(command, args, {
     cwd: workingDirectory,
