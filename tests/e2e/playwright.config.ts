@@ -1,4 +1,8 @@
 import { defineConfig } from '@playwright/test';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const rootDir = path.resolve(fileURLToPath(new URL('.', import.meta.url)), '../..');
 
 export default defineConfig({
   testDir: './',
@@ -12,7 +16,8 @@ export default defineConfig({
     video: 'on',
   },
   webServer: {
-    command: 'pnpm vite --config vite.config.web.ts --host 0.0.0.0 --port 5173 --strictPort',
+    command: `npx vite --config ${path.join(rootDir, 'vite.config.web.ts')} --host 0.0.0.0 --port 5173 --strictPort`,
+    cwd: rootDir,
     port: 5173,
     reuseExistingServer: !process.env.CI,
     stdout: 'pipe',

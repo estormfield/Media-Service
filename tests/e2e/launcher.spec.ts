@@ -204,8 +204,9 @@ test.describe('TenFoot Launcher UI', () => {
     const allowedHostsInput = page.getByLabel('Allowed hosts (optional, comma-separated)');
     await allowedHostsInput.fill('accounts.google.com, *.example.com');
 
-    // Save
-    const saveButton = page.getByRole('button', { name: 'Add Tile' });
+    // Save (scope to modal to avoid header button name collision)
+    const modal = page.locator('.add-tile-modal');
+    const saveButton = modal.getByRole('button', { name: 'Add Tile' });
     await saveButton.click();
 
     // Verify modal closes

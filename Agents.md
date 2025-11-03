@@ -41,8 +41,15 @@ pnpm typecheck
 # 3) Tests (unit + E2E)
 pnpm test
 
-# 4) Package (no publish) – artifacts land in release/
-# NOTE: Ensure version is bumped before packaging (see Version bumping section)
+# 4) Version bump (if this is a release)
+# For minor releases:
+npm run version:bump:minor
+# OR for patch releases:
+npm run version:bump:patch
+# OR for major releases:
+npm run version:bump:major
+
+# 5) Package (no publish) – artifacts land in release/
 pnpm package
 ```
 
@@ -52,58 +59,38 @@ pnpm package
 pnpm format && pnpm lint:fix && pnpm typecheck && pnpm test && pnpm package
 ```
 
-## Individual steps (details)
+## Individual steps (quick)
 
-### Format (check/fix)
-
-- Check: `pnpm format:check`
-- Fix: `pnpm format`
-
-### Lint (check/fix)
-
-- Check: `pnpm lint`
-- Fix: `pnpm lint:fix`
-
-### Typecheck
-
-- `pnpm typecheck`
-
-### Tests
-
-- Unit: `pnpm test:unit`
-- E2E: `pnpm test:e2e`
-- Notes:
-  - Playwright is installed on postinstall. If browsers are missing, run: `pnpm exec playwright install --with-deps`
-  - On Linux, wrap E2E with `xvfb-run -a`.
-  - Videos and traces are saved under `test-results/`.
-
-### Build (renderer/main/preload bundles)
-
-- `pnpm build` (implicitly run by `pnpm package`)
-
-### Package (no publish)
-
-- `pnpm package` → outputs to `release/` (macOS DMG/ZIP, Windows NSIS/MSI)
-- **IMPORTANT**: Always bump the version before packaging to ensure proper versioning in artifacts
+- Format: `pnpm format`
+- Lint: `pnpm lint:fix`
+- Typecheck: `pnpm typecheck`
+- Tests: `pnpm test` (unit: `pnpm test:unit`, e2e: `pnpm test:e2e`)
+  - Playwright browsers: `pnpm exec playwright install --with-deps`
+  - Linux E2E: `xvfb-run -a`
+  - Artifacts: `test-results/`
+- Package: `pnpm package` (runs build; outputs to `release/`)
+- Note: bump version before packaging (see Version bumping)
 
 ### Version bumping
 
 **Required before packaging**: Bump the version number in `package.json`:
 
-1. **Bump version** in `package.json`:
+1. **Bump version** in `package.json` using the npm scripts:
 
    ```bash
    # Patch: 0.1.4 → 0.1.5
-   pnpm version patch
+   npm run version:bump:patch
 
    # Minor: 0.1.4 → 0.2.0
-   pnpm version minor
+   npm run version:bump:minor
 
    # Major: 0.1.4 → 1.0.0
-   pnpm version major
+   npm run version:bump:major
    ```
 
-2. **Commit the version change**:
+   These scripts automatically update `package.json` and create a git commit with the version change.
+
+2. **If you need to commit manually** (scripts handle this automatically, but if needed):
 
    ```bash
    git add package.json
@@ -135,7 +122,7 @@ After version bumping (see "Version bumping" section above) and packaging, you c
 ## What "done" looks like
 
 - No ESLint errors after `pnpm lint`.
-- No Prettier diffs after `pnpm format:check`.
+- No Prettier diffs after `pnpm format`.
 - `pnpm typecheck` passes with zero errors.
 - `pnpm test` passes (unit + E2E).
 - `pnpm package` produces artifacts in `release/`.

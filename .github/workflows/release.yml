@@ -44,12 +44,12 @@ jobs:
         run: pnpm validate:config
 
       - name: Lint
-        run: pnpm lint
+        run: pnpm lint:fix
 
       - name: Check formatting
         shell: bash
         run: |
-          pnpm format:check || (echo "::warning::Prettier formatting issues detected. Run pnpm format to fix." && exit 0)
+          pnpm format
 
       - name: Typecheck
         run: pnpm typecheck
