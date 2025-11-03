@@ -1,7 +1,10 @@
 import { app, dialog } from 'electron';
-import { autoUpdater } from 'electron-updater';
+import { createRequire } from 'node:module';
 import type { LauncherSettings } from '@shared/schema.js';
 import { logger } from './logger.js';
+
+const require = createRequire(import.meta.url);
+const { autoUpdater } = require('electron-updater') as typeof import('electron-updater');
 
 export function initializeAutoUpdater(settings: LauncherSettings): void {
   if (!app.isPackaged) {
