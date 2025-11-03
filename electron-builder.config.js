@@ -50,10 +50,6 @@ const config = {
     gatekeeperAssess: false,
     entitlements: null,
     publish: ['github'],
-    universalApp: {
-      archs: ['x64', 'arm64'],
-      mergeASARs: true,
-    },
   },
   dmg: {
     sign: false,
