@@ -21,7 +21,8 @@
           "title": "YouTube TV",
           "subtitle": "Full screen YouTube experience",
           "url": "https://www.youtube.com/tv",
-          "artwork": "https://i.imgur.com/NvM0QkP.jpg"
+          "artwork": "https://i.imgur.com/NvM0QkP.jpg",
+          "allowedHosts": ["accounts.google.com", "consent.youtube.com"]
         },
         {
           "kind": "youtube",
@@ -43,7 +44,16 @@
           "id": "youtube-music",
           "title": "YouTube Music",
           "subtitle": "Music streaming",
-          "url": "https://music.youtube.com"
+          "url": "https://music.youtube.com",
+          "allowedHosts": ["accounts.google.com"]
+        },
+        {
+          "kind": "web",
+          "id": "nytimes",
+          "title": "NYTimes",
+          "subtitle": "The New York Times",
+          "url": "https://www.nytimes.com",
+          "allowedHosts": ["*.nytimes.com"]
         }
       ]
     }

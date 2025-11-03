@@ -18,6 +18,7 @@ export default function AddTileModal({ isOpen, onClose, onSave }: AddTileModalPr
   const [webTitle, setWebTitle] = useState('');
   const [webUrl, setWebUrl] = useState('');
   const [webArtwork, setWebArtwork] = useState('');
+  const [webAllowedHosts, setWebAllowedHosts] = useState('');
 
   // App form state
   const [appTitle, setAppTitle] = useState('');
@@ -50,6 +51,12 @@ export default function AddTileModal({ isOpen, onClose, onSave }: AddTileModalPr
 
       setSaving(true);
       try {
+        const allowedHosts = webAllowedHosts.trim()
+          ? webAllowedHosts
+              .split(',')
+              .map((h) => h.trim())
+              .filter(Boolean)
+          : undefined;
         const entry: LauncherEntry = {
           kind: 'web',
           id: `web-${Date.now()}`,
@@ -57,12 +64,14 @@ export default function AddTileModal({ isOpen, onClose, onSave }: AddTileModalPr
           title: webTitle.trim(),
           subtitle: undefined,
           artwork: webArtwork.trim() || undefined,
+          allowedHosts,
         };
         await onSave(entry);
         // Reset form
         setWebTitle('');
         setWebUrl('');
         setWebArtwork('');
+        setWebAllowedHosts('');
         onClose();
       } catch (error) {
         console.error('Failed to save web tile:', error);
@@ -71,7 +80,7 @@ export default function AddTileModal({ isOpen, onClose, onSave }: AddTileModalPr
         setSaving(false);
       }
     },
-    [webTitle, webUrl, webArtwork, onSave, onClose],
+    [webTitle, webUrl, webArtwork, webAllowedHosts, onSave, onClose],
   );
 
   const handleAppSubmit = useCallback(
@@ -182,6 +191,19 @@ export default function AddTileModal({ isOpen, onClose, onSave }: AddTileModalPr
                   onChange={(e) => setWebArtwork(e.target.value)}
                   placeholder="https://example.com/image.jpg"
                 />
+              </div>
+              <div className="add-tile-modal__field">
+                <label htmlFor="web-allowed-hosts">Allowed hosts (optional, comma-separated)</label>
+                <input
+                  id="web-allowed-hosts"
+                  type="text"
+                  value={webAllowedHosts}
+                  onChange={(e) => setWebAllowedHosts(e.target.value)}
+                  placeholder="e.g., accounts.google.com, *.nytimes.com"
+                />
+                <small style={{ display: 'block', marginTop: '4px', color: '#999' }}>
+                  Optional. Allow navigation to additional domains for login flows.
+                </small>
               </div>
               <div className="add-tile-modal__actions">
                 <button type="button" onClick={onClose} disabled={saving}>

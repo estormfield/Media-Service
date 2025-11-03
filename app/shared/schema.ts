@@ -18,6 +18,23 @@ export const launcherEntrySchema = z.discriminatedUnion('kind', [
     title: z.string().min(1),
     subtitle: z.string().optional(),
     artwork: z.string().optional(),
+    allowedHosts: z
+      .array(z.string().min(1))
+      .optional()
+      .refine(
+        (hosts) => {
+          if (!hosts) return true;
+          return hosts.every((h) => {
+            // Allow exact hostnames or wildcard patterns like *.example.com
+            return /^(\*\.)?[a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(\.[a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/.test(
+              h,
+            );
+          });
+        },
+        {
+          message: 'Each allowed host must be a valid hostname or wildcard pattern (*.example.com)',
+        },
+      ),
   }),
   z.object({
     kind: z.literal('emby'),

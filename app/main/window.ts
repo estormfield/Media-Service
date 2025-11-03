@@ -43,5 +43,21 @@ export async function createMainWindow(): Promise<BrowserWindow> {
     logger.info('Main window closed');
   });
 
+  win.on('blur', () => {
+    const focused = BrowserWindow.getFocusedWindow();
+    if (focused) return; // another window of this app is focused (e.g., kiosk)
+    setTimeout(() => {
+      if (!BrowserWindow.getFocusedWindow() && !win.isDestroyed()) {
+        win.setAlwaysOnTop(true, 'screen-saver');
+        win.show();
+        win.moveTop();
+        win.focus();
+        setTimeout(() => {
+          if (!win.isDestroyed()) win.setAlwaysOnTop(false);
+        }, 300);
+      }
+    }, 200);
+  });
+
   return win;
 }

@@ -84,8 +84,7 @@ test.describe('TenFoot Launcher UI', () => {
     const tileToDelete = primaryProfile.tiles[0];
     const remainingTiles = primaryProfile.tiles.slice(1);
 
-    // Wait for header actions to be visible, then enter edit mode
-    await expect(page.getByRole('button', { name: '+ Add Tile' })).toBeVisible();
+    // Wait for header action to be visible, then enter edit mode
     const editModeButton = page.getByRole('button', { name: 'Edit Mode' });
     await expect(editModeButton).toBeVisible();
     await editModeButton.click();
@@ -178,5 +177,108 @@ test.describe('TenFoot Launcher UI', () => {
     const updatedTile = updatedProfile.tiles.find((t: { id: string }) => t.id === tileToEdit.id);
     expect(updatedTile).toBeDefined();
     expect(updatedTile.title).toBe(newTitle);
+  });
+
+  test('adds a web tile with allowed hosts', async ({ page }) => {
+    await page.goto('/');
+
+    // Navigate to tiles view
+    await page.keyboard.press('Enter');
+    await expect(page.getByRole('heading', { name: 'TenFoot Launcher' })).toBeVisible();
+
+    // Click Add Tile button
+    const addTileButton = page.getByRole('button', { name: '+ Add Tile' });
+    await expect(addTileButton).toBeVisible();
+    await addTileButton.click();
+
+    // Wait for add modal
+    await expect(page.getByRole('heading', { name: 'Add New Tile' })).toBeVisible();
+
+    // Fill in web tile form
+    const titleInput = page.getByLabel('Title *');
+    await titleInput.fill('Test Web Tile');
+
+    const urlInput = page.getByLabel('URL *');
+    await urlInput.fill('https://example.com');
+
+    const allowedHostsInput = page.getByLabel('Allowed hosts (optional, comma-separated)');
+    await allowedHostsInput.fill('accounts.google.com, *.example.com');
+
+    // Save
+    const saveButton = page.getByRole('button', { name: 'Add Tile' });
+    await saveButton.click();
+
+    // Verify modal closes
+    await expect(page.getByRole('heading', { name: 'Add New Tile' })).not.toBeVisible();
+
+    // Verify config was saved with allowedHosts
+    await expect
+      .poll(async () => {
+        return page.evaluate(() => window.__playwrightSavedConfigs__?.length ?? 0);
+      })
+      .toBeGreaterThan(0);
+
+    const savedConfigs = await page.evaluate(() => window.__playwrightSavedConfigs__ ?? []);
+    const lastSavedConfig = savedConfigs[savedConfigs.length - 1] as typeof sampleConfig;
+    const updatedProfile = lastSavedConfig.profiles.find(
+      (p: { id: string }) => p.id === primaryProfile.id,
+    );
+    const newTile = updatedProfile.tiles.find(
+      (t: { title: string }) => t.title === 'Test Web Tile',
+    );
+    expect(newTile).toBeDefined();
+    expect(newTile.kind).toBe('web');
+    expect(newTile.allowedHosts).toEqual(['accounts.google.com', '*.example.com']);
+  });
+
+  test('edits a web tile to add allowed hosts', async ({ page }) => {
+    await page.goto('/');
+
+    // Navigate to tiles view
+    await page.keyboard.press('Enter');
+    await expect(page.getByRole('heading', { name: 'TenFoot Launcher' })).toBeVisible();
+
+    const tileToEdit = primaryProfile.tiles.find((t: { kind: string }) => t.kind === 'web');
+    if (!tileToEdit) {
+      test.skip();
+      return;
+    }
+
+    // Enter edit mode
+    const editModeButton = page.getByRole('button', { name: 'Edit Mode' });
+    await expect(editModeButton).toBeVisible();
+    await editModeButton.click();
+
+    // Find and click Edit on the web tile
+    const editButton = page.getByRole('button', { name: `Edit ${tileToEdit.title}` });
+    await expect(editButton).toBeVisible();
+    await editButton.click();
+
+    // Wait for edit modal
+    await expect(page.getByRole('heading', { name: 'Edit Tile' })).toBeVisible();
+
+    // Add allowed hosts
+    const allowedHostsInput = page.getByLabel('Allowed hosts (optional, comma-separated)');
+    await allowedHostsInput.fill('accounts.google.com');
+
+    // Save changes
+    const saveButton = page.getByRole('button', { name: 'Save Changes' });
+    await saveButton.click();
+
+    // Verify config was saved with allowedHosts
+    await expect
+      .poll(async () => {
+        return page.evaluate(() => window.__playwrightSavedConfigs__?.length ?? 0);
+      })
+      .toBeGreaterThan(0);
+
+    const savedConfigs = await page.evaluate(() => window.__playwrightSavedConfigs__ ?? []);
+    const lastSavedConfig = savedConfigs[savedConfigs.length - 1] as typeof sampleConfig;
+    const updatedProfile = lastSavedConfig.profiles.find(
+      (p: { id: string }) => p.id === primaryProfile.id,
+    );
+    const updatedTile = updatedProfile.tiles.find((t: { id: string }) => t.id === tileToEdit.id);
+    expect(updatedTile).toBeDefined();
+    expect(updatedTile.allowedHosts).toEqual(['accounts.google.com']);
   });
 });

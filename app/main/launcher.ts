@@ -4,6 +4,21 @@ import type { AppConfig, LauncherEntry } from '@shared/schema.js';
 import type { LaunchEntryPayload } from '@shared/ipc.js';
 import { logger } from './logger.js';
 
+function focusMainWindowAggressive() {
+  const win = BrowserWindow.getAllWindows()[0];
+  if (!win) return;
+  try {
+    win.setAlwaysOnTop(true, 'screen-saver');
+    win.show();
+    win.moveTop();
+    win.focus();
+  } finally {
+    setTimeout(() => {
+      if (!win.isDestroyed()) win.setAlwaysOnTop(false);
+    }, 300);
+  }
+}
+
 function resolveEntry(config: AppConfig, payload: LaunchEntryPayload): LauncherEntry | null {
   const profile = config.profiles.find((p) => p.id === payload.profileId);
   if (!profile) {
@@ -19,17 +34,20 @@ function resolveEntry(config: AppConfig, payload: LaunchEntryPayload): LauncherE
 }
 
 function spawnDetached(command: string, args: string[], workingDirectory?: string) {
-  // macOS: Handle .app bundles using 'open' command
+  // macOS: Handle .app bundles using 'open' command with -W to wait
   if (process.platform === 'darwin' && /\.app$/i.test(command)) {
     logger.info('Launching macOS app bundle: %s', command);
-    const openArgs = ['-n', command];
+    const openArgs = ['-n', '-W', command];
     if (args.length > 0) {
       openArgs.push('--args', ...args);
     }
     const child = spawn('open', openArgs, {
       cwd: workingDirectory,
-      detached: true,
+      detached: false,
       stdio: 'ignore',
+    });
+    child.on('close', () => {
+      focusMainWindowAggressive();
     });
     child.unref();
     return;
@@ -42,6 +60,9 @@ function spawnDetached(command: string, args: string[], workingDirectory?: strin
     windowsHide: false,
     detached: true,
     stdio: 'ignore',
+  });
+  child.on('close', () => {
+    focusMainWindowAggressive();
   });
   child.unref();
 }
@@ -104,9 +125,21 @@ export async function getDefaultBrowser(): Promise<string> {
   throw new Error('No default browser found');
 }
 
+export function isHostAllowed(target: string, baseHost: string, extra: string[] = []): boolean {
+  const tests = [baseHost, ...extra];
+  return tests.some((h) => {
+    if (h.startsWith('*.')) {
+      const domain = h.slice(2);
+      return target === domain || target.endsWith(`.${domain}`);
+    }
+    return target === h;
+  });
+}
+
 function launchWeb(entry: Extract<LauncherEntry, { kind: 'web' }>) {
   const url = new URL(entry.url);
-  const allowedHost = url.host;
+  const baseHost = url.host;
+  const extra = entry.allowedHosts ?? [];
 
   const win = new BrowserWindow({
     kiosk: true,
@@ -120,22 +153,54 @@ function launchWeb(entry: Extract<LauncherEntry, { kind: 'web' }>) {
     },
   });
 
-  // Block navigation outside the domain
+  // Block navigation outside allowed domains
   win.webContents.on('will-navigate', (event, navigationUrl) => {
     try {
       const navUrl = new URL(navigationUrl);
-      if (navUrl.host !== allowedHost) {
+      if (!isHostAllowed(navUrl.host, baseHost, extra)) {
         event.preventDefault();
-        logger.warn('Blocked navigation to %s (allowed: %s)', navigationUrl, allowedHost);
+        logger.warn(
+          'Blocked navigation to %s (allowed: %s, %s)',
+          navigationUrl,
+          baseHost,
+          extra.join(', '),
+        );
       }
     } catch {
       event.preventDefault();
     }
   });
 
-  // Block new window opens
-  win.webContents.setWindowOpenHandler(() => {
-    return { action: 'deny' };
+  // Block redirects outside allowed domains
+  win.webContents.on('will-redirect', (event, redirectUrl) => {
+    try {
+      const redirect = new URL(redirectUrl);
+      if (!isHostAllowed(redirect.host, baseHost, extra)) {
+        event.preventDefault();
+        logger.warn(
+          'Blocked redirect to %s (allowed: %s, %s)',
+          redirectUrl,
+          baseHost,
+          extra.join(', '),
+        );
+      }
+    } catch {
+      event.preventDefault();
+    }
+  });
+
+  // Handle window opens - load in same window if allowed, otherwise block
+  win.webContents.setWindowOpenHandler(({ url }) => {
+    try {
+      const openUrl = new URL(url);
+      if (isHostAllowed(openUrl.host, baseHost, extra)) {
+        // Load in same window to keep kiosk lock
+        win.webContents.loadURL(url);
+      }
+    } catch {
+      // Invalid URL, block
+    }
+    return { action: 'deny' }; // always block new windows
   });
 
   // Close on back navigation keys (IR remote, keyboard, gamepad)

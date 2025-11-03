@@ -20,6 +20,7 @@ export default function EditTileModal({ isOpen, tile, onClose, onSave }: EditTil
   const [webTitle, setWebTitle] = useState('');
   const [webUrl, setWebUrl] = useState('');
   const [webArtwork, setWebArtwork] = useState('');
+  const [webAllowedHosts, setWebAllowedHosts] = useState('');
 
   // App form state
   const [appTitle, setAppTitle] = useState('');
@@ -39,6 +40,9 @@ export default function EditTileModal({ isOpen, tile, onClose, onSave }: EditTil
       setWebTitle(tile.title);
       setWebUrl(tile.url);
       setWebArtwork(tile.artwork || '');
+      setWebAllowedHosts(
+        tile.kind === 'web' && tile.allowedHosts ? tile.allowedHosts.join(', ') : '',
+      );
     } else if (tile.kind === 'game' || tile.kind === 'emby') {
       setActiveTab('app');
       setAppTitle(tile.title);
@@ -86,6 +90,12 @@ export default function EditTileModal({ isOpen, tile, onClose, onSave }: EditTil
             browserArgs: tile.browserArgs,
           };
         } else {
+          const allowedHosts = webAllowedHosts.trim()
+            ? webAllowedHosts
+                .split(',')
+                .map((h) => h.trim())
+                .filter(Boolean)
+            : undefined;
           entry = {
             kind: 'web',
             id: tile.id,
@@ -93,6 +103,7 @@ export default function EditTileModal({ isOpen, tile, onClose, onSave }: EditTil
             title: webTitle.trim(),
             subtitle: tile.subtitle,
             artwork: webArtwork.trim() || undefined,
+            allowedHosts,
           };
         }
         await onSave(entry);
@@ -104,7 +115,7 @@ export default function EditTileModal({ isOpen, tile, onClose, onSave }: EditTil
         setSaving(false);
       }
     },
-    [webTitle, webUrl, webArtwork, tile, onSave, onClose],
+    [webTitle, webUrl, webArtwork, webAllowedHosts, tile, onSave, onClose],
   );
 
   const handleAppSubmit = useCallback(
@@ -211,6 +222,21 @@ export default function EditTileModal({ isOpen, tile, onClose, onSave }: EditTil
                   onChange={(e) => setWebArtwork(e.target.value)}
                   placeholder="https://example.com/image.jpg"
                 />
+              </div>
+              <div className="add-tile-modal__field">
+                <label htmlFor="edit-web-allowed-hosts">
+                  Allowed hosts (optional, comma-separated)
+                </label>
+                <input
+                  id="edit-web-allowed-hosts"
+                  type="text"
+                  value={webAllowedHosts}
+                  onChange={(e) => setWebAllowedHosts(e.target.value)}
+                  placeholder="e.g., accounts.google.com, *.nytimes.com"
+                />
+                <small style={{ display: 'block', marginTop: '4px', color: '#999' }}>
+                  Optional. Allow navigation to additional domains for login flows.
+                </small>
               </div>
               <div className="add-tile-modal__actions">
                 <button type="button" onClick={onClose} disabled={saving}>
