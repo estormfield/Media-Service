@@ -51,7 +51,6 @@ const config = {
     category: 'public.app-category.games',
     target: [
       { target: 'dmg', arch: ['universal'] },
-      { target: 'zip', arch: ['universal'] },
     ],
     artifactName: 'tenfoot-launcher-${version}-mac.${ext}',
     hardenedRuntime: false,

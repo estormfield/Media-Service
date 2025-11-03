@@ -1,12 +1,15 @@
 {
   "name": "tenfoot-launcher",
-  "version": "0.2.0",
+  "version": "0.5.0",
   "private": true,
   "author": "estormfield",
   "description": "Cross-platform Electron-based 10-foot launcher with React UI and auto-updates.",
   "main": "dist/main/index.js",
   "type": "module",
   "scripts": {
+    "pm:activate": "corepack prepare pnpm@8.15.4 --activate || corepack enable || true",
+    "deps:install": "pnpm install --frozen-lockfile",
+    "bootstrap": "run-s pm:activate deps:install",
     "clean": "rimraf dist",
     "clean:release": "rimraf release",
     "dev": "cross-env NODE_ENV=development vite",
@@ -29,10 +32,11 @@
     "ci:publish": "tsx scripts/publish.ts",
     "package:publish": "pnpm ci:publish -- --ci",
     "package:publish:dry-run": "pnpm ci:publish -- --dry-run",
-    "ci:all": "run-s lint:fix format typecheck test version:bump:minor package package:publish:dry-run",
+    "ci:all": "run-s pm:activate deps:install lint:fix format typecheck test version:bump:minor package package:publish:dry-run",
     "electron:package": "electron-builder --config electron-builder.config.cjs",
     "electron:publish": "electron-builder --config electron-builder.config.cjs --publish always",
     "electron": "electron .",
+    "preinstall": "corepack prepare pnpm@8.15.4 --activate || true",
     "postinstall": "playwright install --with-deps"
   },
   "build": {
@@ -45,7 +49,9 @@
   "dependencies": {
     "electron-log": "^5.1.2",
     "electron-updater": "^6.1.8",
+    "fkill": "^9.0.0",
     "fs-extra": "^11.2.0",
+    "ps-list": "^9.0.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "tslib": "^2.6.3",

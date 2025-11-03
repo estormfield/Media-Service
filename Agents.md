@@ -13,11 +13,11 @@
 - macOS or Windows (Linux works for renderer tests; packaging targets macOS/Windows in this repo)
 - Optional for publish: `GH_TOKEN` with `repo` scope
 
-## Setup
+## Setup (bootstraps pnpm automatically)
 
 ```bash
-# Ensure pnpm is available (Node 18+ ships Corepack)
-corepack enable || true
+# Activate the pinned pnpm version from package.json → packageManager
+corepack prepare pnpm@8.15.4 --activate || corepack enable || true
 
 # Install dependencies (runs Playwright install via postinstall)
 pnpm install --frozen-lockfile
@@ -29,6 +29,7 @@ pnpm validate:config
 ## Run the full local CI sequence (required after every change!)
 
 ```bash
+# ci:all now internally runs pm:activate and deps:install first
 pnpm ci:all
 ```
 
@@ -48,6 +49,7 @@ pnpm ci:all
 - Playwright browsers: `pnpm exec playwright install --with-deps`
 - Clean build outputs: `pnpm clean`
 - Node/pnpm versions: see `package.json` → `engines`
+- Corepack/pnpm issues: run `corepack prepare pnpm@8.15.4 --activate` then `pnpm install`
 
 ## Response convention for agents
 

@@ -46,7 +46,8 @@ function tryForceFullscreenMac(delayMs = 1200) {
   try {
     setTimeout(() => {
       try {
-        const child = spawn(
+        // Try keyboard shortcut first (Ctrl+Cmd+F)
+        const child1 = spawn(
           'osascript',
           [
             '-e',
@@ -54,7 +55,34 @@ function tryForceFullscreenMac(delayMs = 1200) {
           ],
           { detached: true, stdio: 'ignore' },
         );
-        child.unref();
+        child1.unref();
+
+        // Fallback: Try to maximize via AppleScript after a delay
+        setTimeout(() => {
+          try {
+            const child2 = spawn(
+              'osascript',
+              [
+                '-e',
+                'tell application "System Events"',
+                '-e',
+                '  set frontApp to first application process whose frontmost is true',
+                '-e',
+                '  tell frontApp',
+                '-e',
+                '    set value of attribute "AXFullScreen" of window 1 to true',
+                '-e',
+                '  end tell',
+                '-e',
+                'end tell',
+              ],
+              { detached: true, stdio: 'ignore' },
+            );
+            child2.unref();
+          } catch {
+            // noop
+          }
+        }, 500);
       } catch {
         // noop
       }
@@ -66,6 +94,7 @@ function tryForceFullscreenMac(delayMs = 1200) {
 
 function spawnDetached(command: string, args: string[], workingDirectory?: string) {
   setExternalLaunchInProgress(true);
+
   // macOS: Handle .app bundles using 'open' command with -W to wait
   if (process.platform === 'darwin' && /\.app$/i.test(command)) {
     logger.info('Launching macOS app bundle: %s', command);
@@ -87,7 +116,52 @@ function spawnDetached(command: string, args: string[], workingDirectory?: strin
     return;
   }
 
-  // Default behavior for binaries and other platforms
+  // Windows: Use PowerShell to launch with WindowStyle Maximized
+  if (process.platform === 'win32') {
+    logger.info('Launching Windows app (maximized): %s %s', command, args.join(' '));
+    // Escape arguments for PowerShell
+    const escapedArgs = args.map((arg) => {
+      // If arg contains spaces or special chars, wrap in quotes and escape internal quotes
+      if (arg.includes(' ') || arg.includes('"') || arg.includes('$')) {
+        return `"${arg.replace(/"/g, '`"')}"`;
+      }
+      return arg;
+    });
+    const argsStr = escapedArgs.length > 0 ? escapedArgs.join(',') : '';
+
+    // Escape command path for PowerShell
+    const escapedCommand = command.includes(' ') ? `"${command.replace(/"/g, '`"')}"` : command;
+    const escapedCwd = workingDirectory
+      ? workingDirectory.includes(' ')
+        ? `"${workingDirectory.replace(/"/g, '`"')}"`
+        : workingDirectory
+      : '';
+
+    // PowerShell script to launch with maximized window and wait for exit
+    const psScript = `
+      $proc = Start-Process -FilePath ${escapedCommand} -ArgumentList ${argsStr} ${
+        escapedCwd ? `-WorkingDirectory ${escapedCwd}` : ''
+      } -WindowStyle Maximized -PassThru
+      if ($proc) {
+        Wait-Process -Id $proc.Id
+      }
+    `.trim();
+
+    const child = spawn('powershell', ['-NoProfile', '-Command', psScript], {
+      cwd: workingDirectory,
+      detached: false,
+      stdio: 'ignore',
+      windowsHide: true,
+    });
+    child.on('close', () => {
+      setExternalLaunchInProgress(false);
+      focusMainWindowAggressive();
+    });
+    child.unref();
+    return;
+  }
+
+  // Default behavior for binaries and other platforms (Linux, macOS non-bundle)
   logger.info('Launching: %s %s', command, args.join(' '));
   const child = spawn(command, args, {
     cwd: workingDirectory,
