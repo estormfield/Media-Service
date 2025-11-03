@@ -26,12 +26,16 @@ pnpm install --frozen-lockfile
 pnpm validate:config
 ```
 
-## Run the full local CI sequence (required after every change!)
+## Run the full local CI sequence and do a PR Review(required after every change!)
 
 ```bash
 # ci:all now internally runs pm:activate and deps:install first
 pnpm ci:all
 ```
+
+- do a review of all unstaged changes. If important code was accidently deleted fix it.
+
+- git commit and git push
 
 2. **If you need to commit manually** (scripts handle this automatically, but if needed):
 

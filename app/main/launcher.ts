@@ -27,6 +27,49 @@ function focusMainWindowAggressive() {
   }
 }
 
+function restoreLauncher(mainWindow: BrowserWindow | undefined): void {
+  if (!mainWindow || mainWindow.isDestroyed()) return;
+  mainWindow.setKiosk(true);
+  mainWindow.show();
+  focusMainWindowAggressive();
+}
+
+function hideLauncher(mainWindow: BrowserWindow | undefined): void {
+  if (!mainWindow || mainWindow.isDestroyed()) return;
+  mainWindow.setKiosk(false);
+  mainWindow.hide();
+}
+
+function createFocusWatcher(
+  appName: string,
+  mainWindow: BrowserWindow | undefined,
+): NodeJS.Timeout | null {
+  if (!mainWindow || mainWindow.isDestroyed()) return null;
+  return setInterval(() => {
+    if (!externalLaunchInProgress || !mainWindow || mainWindow.isDestroyed()) return;
+    const checkScript = spawn(
+      'osascript',
+      [
+        '-e',
+        'tell application "System Events" to get name of (first application process whose frontmost is true)',
+      ],
+      { stdio: ['ignore', 'pipe', 'ignore'] },
+    );
+    let output = '';
+    checkScript.stdout?.on('data', (data) => {
+      output += data.toString();
+    });
+    checkScript.on('close', (code) => {
+      if (code === 0 && externalLaunchInProgress && output.trim() !== appName) {
+        logger.info('Launched app %s is no longer frontmost, restoring launcher', appName);
+        setExternalLaunchInProgress(false);
+        restoreLauncher(mainWindow);
+      }
+    });
+    checkScript.unref();
+  }, 700);
+}
+
 function resolveEntry(config: AppConfig, payload: LaunchEntryPayload): LauncherEntry | null {
   const profile = config.profiles.find((p) => p.id === payload.profileId);
   if (!profile) {
@@ -41,95 +84,68 @@ function resolveEntry(config: AppConfig, payload: LaunchEntryPayload): LauncherE
   return entry;
 }
 
-function tryForceFullscreenMac(delayMs = 1200) {
-  if (process.platform !== 'darwin') return;
-  try {
-    setTimeout(() => {
-      try {
-        // Try keyboard shortcut first (Ctrl+Cmd+F)
-        const child1 = spawn(
-          'osascript',
-          [
-            '-e',
-            'tell application "System Events" to keystroke "f" using {control down, command down}',
-          ],
-          { detached: true, stdio: 'ignore' },
-        );
-        child1.unref();
-
-        // Fallback: Try to maximize via AppleScript after a delay
-        setTimeout(() => {
-          try {
-            const child2 = spawn(
-              'osascript',
-              [
-                '-e',
-                'tell application "System Events"',
-                '-e',
-                '  set frontApp to first application process whose frontmost is true',
-                '-e',
-                '  tell frontApp',
-                '-e',
-                '    set value of attribute "AXFullScreen" of window 1 to true',
-                '-e',
-                '  end tell',
-                '-e',
-                'end tell',
-              ],
-              { detached: true, stdio: 'ignore' },
-            );
-            child2.unref();
-          } catch {
-            // noop
-          }
-        }, 500);
-      } catch {
-        // noop
-      }
-    }, delayMs);
-  } catch {
-    // noop
-  }
-}
-
 function spawnDetached(command: string, args: string[], workingDirectory?: string) {
+  // Guard: skip if external launch already in progress
+  if (externalLaunchInProgress) {
+    logger.info('External launch already in progress, skipping duplicate launch');
+    return;
+  }
+
   setExternalLaunchInProgress(true);
 
-  // macOS: Handle .app bundles using 'open' command with -W to wait
+  // Get main window to hide/show it
+  const mainWindow = BrowserWindow.getAllWindows()[0];
+
+  // macOS: Handle .app bundles using 'open -a <AppName> -W' (omit -n to reuse existing instance)
   if (process.platform === 'darwin' && /\.app$/i.test(command)) {
     logger.info('Launching macOS app bundle: %s', command);
-    const openArgs = ['-n', '-W', command];
+
+    // Extract app name from path (e.g., /Applications/Comet.app -> Comet)
+    const pathParts = command.split('/');
+    const appBundleName = pathParts[pathParts.length - 1];
+    const appName = appBundleName.replace(/\.app$/i, '');
+
+    hideLauncher(mainWindow);
+
+    const openArgs = ['-a', appName, '-W'];
     if (args.length > 0) {
       openArgs.push('--args', ...args);
     }
+
     const child = spawn('open', openArgs, {
       cwd: workingDirectory,
       detached: false,
       stdio: 'ignore',
     });
+
+    const focusWatcher = createFocusWatcher(appName, mainWindow);
+
     child.on('close', () => {
-      setExternalLaunchInProgress(false);
-      focusMainWindowAggressive();
+      if (focusWatcher) clearInterval(focusWatcher);
+      if (externalLaunchInProgress) {
+        setExternalLaunchInProgress(false);
+        restoreLauncher(mainWindow);
+      }
     });
+
     child.unref();
-    tryForceFullscreenMac();
     return;
   }
 
   // Windows: Use PowerShell to launch with WindowStyle Maximized
   if (process.platform === 'win32') {
     logger.info('Launching Windows app (maximized): %s %s', command, args.join(' '));
+
+    hideLauncher(mainWindow);
+
     // Escape arguments for PowerShell
     const escapedArgs = args.map((arg) => {
-      // If arg contains spaces or special chars, wrap in quotes and escape internal quotes
       if (arg.includes(' ') || arg.includes('"') || arg.includes('$')) {
         return `"${arg.replace(/"/g, '`"')}"`;
       }
       return arg;
     });
     const argsStr = escapedArgs.length > 0 ? escapedArgs.join(',') : '';
-
-    // Escape command path for PowerShell
     const escapedCommand = command.includes(' ') ? `"${command.replace(/"/g, '`"')}"` : command;
     const escapedCwd = workingDirectory
       ? workingDirectory.includes(' ')
@@ -137,7 +153,6 @@ function spawnDetached(command: string, args: string[], workingDirectory?: strin
         : workingDirectory
       : '';
 
-    // PowerShell script to launch with maximized window and wait for exit
     const psScript = `
       $proc = Start-Process -FilePath ${escapedCommand} -ArgumentList ${argsStr} ${
         escapedCwd ? `-WorkingDirectory ${escapedCwd}` : ''
@@ -155,7 +170,7 @@ function spawnDetached(command: string, args: string[], workingDirectory?: strin
     });
     child.on('close', () => {
       setExternalLaunchInProgress(false);
-      focusMainWindowAggressive();
+      restoreLauncher(mainWindow);
     });
     child.unref();
     return;
@@ -163,6 +178,8 @@ function spawnDetached(command: string, args: string[], workingDirectory?: strin
 
   // Default behavior for binaries and other platforms (Linux, macOS non-bundle)
   logger.info('Launching: %s %s', command, args.join(' '));
+  hideLauncher(mainWindow);
+
   const child = spawn(command, args, {
     cwd: workingDirectory,
     windowsHide: false,
@@ -171,10 +188,9 @@ function spawnDetached(command: string, args: string[], workingDirectory?: strin
   });
   child.on('close', () => {
     setExternalLaunchInProgress(false);
-    focusMainWindowAggressive();
+    restoreLauncher(mainWindow);
   });
   child.unref();
-  tryForceFullscreenMac();
 }
 
 export async function getDefaultBrowser(): Promise<string> {
@@ -349,64 +365,14 @@ function launchWeb(entry: Extract<LauncherEntry, { kind: 'web' }>) {
     },
   });
 
-  // Position overlay at top-left
-  const overlayHTML = `
-    <!DOCTYPE html>
-    <html>
-      <head>
-        <style>
-          body {
-            margin: 0;
-            padding: 0;
-            background: transparent;
-            display: flex;
-            align-items: center;
-            justify-content: flex-start;
-            font-family: system-ui, sans-serif;
-          }
-          button {
-            background: rgba(0, 0, 0, 0.7);
-            color: white;
-            border: 2px solid rgba(255, 255, 255, 0.5);
-            padding: 12px 24px;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            margin: 8px;
-            transition: all 120ms ease;
-          }
-          button:hover {
-            background: rgba(0, 0, 0, 0.9);
-            border-color: rgba(255, 255, 255, 0.8);
-          }
-        </style>
-      </head>
-      <body>
-        <button id="back-btn">← Back to Home</button>
-        <script>
-          document.getElementById('back-btn').addEventListener('click', () => {
-            window.close();
-          });
-        </script>
-      </body>
-    </html>
-  `;
+  const overlayHTML = `<!DOCTYPE html><html><head><style>body{margin:0;padding:0;background:transparent;display:flex;align-items:center;justify-content:flex-start;font-family:system-ui,sans-serif}button{background:rgba(0,0,0,0.7);color:white;border:2px solid rgba(255,255,255,0.5);padding:12px 24px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;margin:8px;transition:all 120ms ease}button:hover{background:rgba(0,0,0,0.9);border-color:rgba(255,255,255,0.8)}</style></head><body><button id="back-btn">← Back to Home</button><script>document.getElementById('back-btn').addEventListener('click',()=>{window.close()})</script></body></html>`;
 
   overlay.loadURL(`data:text/html;charset=utf-8,${encodeURIComponent(overlayHTML)}`);
-
-  // Close overlay when kiosk window closes
   win.on('closed', () => {
-    if (!overlay.isDestroyed()) {
-      overlay.close();
-    }
+    if (!overlay.isDestroyed()) overlay.close();
   });
-
-  // Close kiosk when overlay window closes
   overlay.on('closed', () => {
-    if (!win.isDestroyed()) {
-      win.close();
-    }
+    if (!win.isDestroyed()) win.close();
   });
 
   win.loadURL(entry.url);
